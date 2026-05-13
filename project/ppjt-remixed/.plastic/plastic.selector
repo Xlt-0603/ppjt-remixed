@@ -1,0 +1,4 @@
+repository "ppjt-remixed@tj_wechat_os_qy06jre1q3hd6vjfhi99hpuhu@cloud.cn"
+  path "/"
+    br "/main"
+    co "/main"
