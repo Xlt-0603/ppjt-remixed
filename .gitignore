@@ -1,0 +1,47 @@
+# This .gitignore is used for Unity projects.
+# It excludes temporary files, build outputs, and other unnecessary data.
+
+# Cache folder
+/[Cc]ache/
+/[Cc]aches/
+
+# Build generated
+/[Bb]uild/
+/[Bb]uilds/
+*.unityproj
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+
+# Unity3D generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Pp]layerData/
+
+# Asset meta files (These are usually important for Unity, but can be ignored in some workflows)
+# *.meta
+
+# Unity Packages
+/Packages/packages-lock.json
+
+# macOS system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Visual Studio Code
+.vscode/
