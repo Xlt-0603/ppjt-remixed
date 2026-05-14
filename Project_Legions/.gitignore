@@ -1,47 +1,12 @@
-# This .gitignore is used for Unity projects.
-# It excludes temporary files, build outputs, and other unnecessary data.
-
-# Cache folder
-/[Cc]ache/
-/[Cc]aches/
-
-# Build generated
-/[Bb]uild/
-/[Bb]uilds/
-*.unityproj
-*.csproj
-*.sln
-*.suo
-*.user
-*.userprefs
-*.pidb
-*.booproj
-*.svd
-*.pdb
-*.opendb
-
-# Unity3D generated
+# 1. 必须忽略的文件夹（这些是自动生成的，不需要上传，否则会导致冲突）
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
-/[Ll]ogs/
-/[Uu]ser[Ss]ettings/
-/[Pp]layerData/
+/[Bb]uild/
+/[Bb]uilds/
 
-# Asset meta files (These are usually important for Unity, but can be ignored in some workflows)
-# *.meta
+# 2. 必须保留的文件（确保没有写 *.meta 这一行！）
+# 千万不要写 *.meta，否则你的图片引用会全部丢失！
 
-# Unity Packages
-/Packages/packages-lock.json
-
-# macOS system files
+# 3. 系统文件
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Visual Studio Code
-.vscode/
