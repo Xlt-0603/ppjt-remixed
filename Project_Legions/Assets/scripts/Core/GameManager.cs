@@ -66,7 +66,8 @@ namespace PPCorps
 
             OnBeat?.Invoke(Bar, Beat);
 
-            foreach (var unit in _allUnits)
+            var unitsThisBeat = new List<UnitBase>(_allUnits);
+            foreach (var unit in unitsThisBeat)
             {
                 if (unit != null) unit.OnBeat(Bar, Beat);
             }

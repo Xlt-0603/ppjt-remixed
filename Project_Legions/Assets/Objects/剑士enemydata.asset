@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b540171adb2547148919d66567cc639e, type: 3}
   m_Name: "\u5251\u58EBenemydata"
   m_EditorClassIdentifier: 
-  unitName: 
-  prefab: {fileID: 0}
+  unitName: "\u5251\u58EBenemy"
+  prefab: {fileID: 5534889972005926264, guid: c59371fd70abc9947805b5c7dd6ae53a, type: 3}
   icon: {fileID: 0}
   unitType: 0
-  maxHP: 10
+  maxHP: 15
   attackPower: 2
   attackRange: 1
   attackIntervalInBeats: 4
-  moveSpeed: 0.15
+  moveSpeed: 2
   deployCost: 3

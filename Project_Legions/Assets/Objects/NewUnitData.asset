@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b540171adb2547148919d66567cc639e, type: 3}
   m_Name: NewUnitData
   m_EditorClassIdentifier: 
-  unitName: 
-  prefab: {fileID: 0}
+  unitName: "\u5251\u58EB"
+  prefab: {fileID: 626642080787768485, guid: 0fde46ec0e46c4945bb4d0d1917f5ec3, type: 3}
   icon: {fileID: 0}
   unitType: 0
-  maxHP: 10
+  maxHP: 20
   attackPower: 2
   attackRange: 1
   attackIntervalInBeats: 4
-  moveSpeed: 1
-  deployCost: 3
+  moveSpeed: 2
+  deployCost: 1
