@@ -19,6 +19,6 @@ MonoBehaviour:
   maxHP: 15
   attackPower: 2
   attackRange: 1
-  attackIntervalInBeats: 4
+  attackIntervalInBeats: 8
   moveSpeed: 2
   deployCost: 3
