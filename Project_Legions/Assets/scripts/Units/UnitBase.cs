@@ -12,7 +12,7 @@ namespace PPCorps
         protected int _attackCooldown;
         protected UnitBase _currentTarget;
         protected bool _isDead;
-        protected UnitAction _currentAction = UnitAction.Idle;
+        private UnitAction _currentAction = UnitAction.Idle;
 
         public bool IsEnemy => isEnemy;
         public bool IsDead => _isDead;
@@ -20,10 +20,16 @@ namespace PPCorps
         public int MaxHP => data != null ? data.maxHP : 1;
         public UnitAction CurrentAction => _currentAction;
         public UnitBase CurrentTarget => _currentTarget;
+        public Vector3 LogicalPosition { get; protected set; }
+        public float FacingDirection { get; protected set; }
+
+        public event System.Action<UnitAction> OnActionChanged;
 
         protected virtual void Start()
         {
             _currentHP = data != null ? data.maxHP : 1;
+            LogicalPosition = transform.position;
+            FacingDirection = isEnemy ? -1f : 1f;
 
             if (defaultMoveDirection == Vector2.zero)
                 defaultMoveDirection = isEnemy ? Vector2.left : Vector2.right;
@@ -33,6 +39,13 @@ namespace PPCorps
 
             if (GetComponent<UnitHPBar>() == null)
                 gameObject.AddComponent<UnitHPBar>();
+        }
+
+        protected void SetAction(UnitAction action)
+        {
+            if (_currentAction == action) return;
+            _currentAction = action;
+            OnActionChanged?.Invoke(action);
         }
 
         public virtual void OnBeat(int bar, int beat)
@@ -48,16 +61,17 @@ namespace PPCorps
             else if (beat == 1)
             {
                 if (_currentTarget != null)
-                    MoveOneStepTowards(_currentTarget.transform.position);
+                    MoveOneStepTowards(_currentTarget.LogicalPosition);
                 else
                 {
-                    transform.position += (Vector3)defaultMoveDirection * data.moveSpeed;
-                    _currentAction = UnitAction.Moving;
+                    LogicalPosition += (Vector3)defaultMoveDirection * data.moveSpeed;
+                    FacingDirection = defaultMoveDirection.x;
+                    SetAction(UnitAction.Moving);
                 }
             }
             else
             {
-                _currentAction = UnitAction.Idle;
+                SetAction(UnitAction.Idle);
             }
         }
 
@@ -66,11 +80,11 @@ namespace PPCorps
             if (_attackCooldown > 0)
             {
                 _attackCooldown--;
-                _currentAction = UnitAction.Idle;
+                SetAction(UnitAction.Idle);
                 return;
             }
 
-            _currentAction = UnitAction.Attacking;
+            SetAction(UnitAction.Attacking);
             target.TakeDamage(data.attackPower);
             _attackCooldown = data.attackIntervalInBeats;
         }
@@ -78,7 +92,6 @@ namespace PPCorps
         public virtual void TakeDamage(int damage)
         {
             if (_isDead) return;
-
             _currentHP -= damage;
             if (_currentHP <= 0) Die();
         }
@@ -86,18 +99,16 @@ namespace PPCorps
         protected virtual void Die()
         {
             _isDead = true;
-            _currentAction = UnitAction.Dead;
-
+            SetAction(UnitAction.Dead);
             if (GameManager.Instance != null)
                 GameManager.Instance.UnregisterUnit(this);
-
             Destroy(gameObject);
         }
 
         protected bool InAttackRange(UnitBase target)
         {
             if (target == null) return false;
-            float dist = Vector3.Distance(transform.position, target.transform.position);
+            float dist = Vector3.Distance(LogicalPosition, target.LogicalPosition);
             return dist <= data.attackRange;
         }
 
@@ -105,31 +116,28 @@ namespace PPCorps
         {
             UnitBase nearest = null;
             float minDist = float.MaxValue;
-
             var allUnits = GameManager.Instance.GetAllUnits();
             foreach (var unit in allUnits)
             {
                 if (unit == null || unit == this || unit.IsDead) continue;
                 if (unit.IsEnemy == isEnemy) continue;
-
-                float dist = Vector3.Distance(transform.position, unit.transform.position);
+                float dist = Vector3.Distance(LogicalPosition, unit.LogicalPosition);
                 if (dist < minDist)
                 {
                     minDist = dist;
                     nearest = unit;
                 }
             }
-
             return nearest;
         }
 
         protected void MoveOneStepTowards(Vector3 target)
         {
             if (data == null) return;
-
-            _currentAction = UnitAction.Moving;
-            Vector3 dir = (target - transform.position).normalized;
-            transform.position += dir * data.moveSpeed;
+            SetAction(UnitAction.Moving);
+            Vector3 dir = (target - LogicalPosition).normalized;
+            FacingDirection = dir.x;
+            LogicalPosition += dir * data.moveSpeed;
         }
 
         private void OnDestroy()

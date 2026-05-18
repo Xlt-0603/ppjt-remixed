@@ -99,3 +99,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: bb21ed97bb43ba14d8b9ffa99208f98c, type: 2}
   isEnemy: 0
+  defaultMoveDirection: {x: 0, y: 0}
