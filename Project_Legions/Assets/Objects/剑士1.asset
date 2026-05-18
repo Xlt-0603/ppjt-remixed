@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b540171adb2547148919d66567cc639e, type: 3}
-  m_Name: NewUnitData
+  m_Name: "\u5251\u58EB1"
   m_EditorClassIdentifier: 
   unitName: "\u5251\u58EB"
   prefab: {fileID: 626642080787768485, guid: 0fde46ec0e46c4945bb4d0d1917f5ec3, type: 3}
