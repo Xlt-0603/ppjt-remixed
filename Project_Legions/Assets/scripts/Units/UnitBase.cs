@@ -7,6 +7,7 @@ namespace PPCorps
         [SerializeField] protected UnitData data;
         [SerializeField] protected bool isEnemy;
         [SerializeField] protected Vector2 defaultMoveDirection = Vector2.zero;
+        [SerializeField] private Animator _animator;
 
         protected int _currentHP;
         protected int _attackCooldown;
@@ -34,11 +35,16 @@ namespace PPCorps
             if (defaultMoveDirection == Vector2.zero)
                 defaultMoveDirection = isEnemy ? Vector2.left : Vector2.right;
 
+            if (_animator == null)
+                _animator = GetComponent<Animator>();
+
             if (GameManager.Instance != null)
                 GameManager.Instance.RegisterUnit(this);
 
             if (GetComponent<UnitHPBar>() == null)
                 gameObject.AddComponent<UnitHPBar>();
+
+            SyncAnimator();
         }
 
         protected void SetAction(UnitAction action)
@@ -46,6 +52,13 @@ namespace PPCorps
             if (_currentAction == action) return;
             _currentAction = action;
             OnActionChanged?.Invoke(action);
+            SyncAnimator();
+        }
+
+        private void SyncAnimator()
+        {
+            if (_animator != null && _animator.isActiveAndEnabled)
+                _animator.SetInteger("Action", (int)_currentAction);
         }
 
         public virtual void OnBeat(int bar, int beat)
