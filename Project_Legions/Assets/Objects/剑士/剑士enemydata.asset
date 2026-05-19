@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: "\u5251\u58EBenemydata"
   m_EditorClassIdentifier: 
   unitName: "\u5251\u58EBenemy"
-  prefab: {fileID: 5534889972005926264, guid: c59371fd70abc9947805b5c7dd6ae53a, type: 3}
+  prefab: {fileID: 6666266967036799093, guid: 77b6b7deea42c7640a27c77192c88693, type: 3}
   icon: {fileID: 0}
   unitType: 0
   maxHP: 600
