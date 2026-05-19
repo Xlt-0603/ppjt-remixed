@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3389634171219273220}
   - component: {fileID: 2701793202863839455}
   - component: {fileID: 974818523338156858}
+  - component: {fileID: 3343730834409952880}
   m_Layer: 0
   m_Name: tower
   m_TagString: Untagged
@@ -101,6 +102,7 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: e5879cbc2ff7fb0489a33a161642da05, type: 2}
   isEnemy: 0
   defaultMoveDirection: {x: 1, y: 0}
+  _animator: {fileID: 0}
 --- !u!114 &974818523338156858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,3 +118,17 @@ MonoBehaviour:
   _offset: {x: 0, y: 1.2}
   _barWidth: 60
   _barHeight: 8
+--- !u!114 &3343730834409952880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2998969972814584414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba4b38a3487521347b2938a20d504c94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spriteRenderer: {fileID: 3389634171219273220}
+  _smoothSpeed: 12

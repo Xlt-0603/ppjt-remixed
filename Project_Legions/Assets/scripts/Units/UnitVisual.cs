@@ -13,7 +13,6 @@ namespace PPCorps
         private void Start()
         {
             _unit = GetComponent<UnitBase>();
-            transform.position = _unit.LogicalPosition;
         }
 
         private void Update()

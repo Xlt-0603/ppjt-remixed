@@ -26,10 +26,16 @@ namespace PPCorps
 
         public event System.Action<UnitAction> OnActionChanged;
 
+        private bool _hasVisual;
+
+        private void Awake()
+        {
+            LogicalPosition = transform.position;
+        }
+
         protected virtual void Start()
         {
             _currentHP = data != null ? data.maxHP : 1;
-            LogicalPosition = transform.position;
             FacingDirection = isEnemy ? -1f : 1f;
 
             if (defaultMoveDirection == Vector2.zero)
@@ -38,6 +44,8 @@ namespace PPCorps
             if (_animator == null)
                 _animator = GetComponent<Animator>();
 
+            _hasVisual = GetComponent<UnitVisual>() != null;
+
             if (GameManager.Instance != null)
                 GameManager.Instance.RegisterUnit(this);
 
@@ -45,6 +53,13 @@ namespace PPCorps
                 gameObject.AddComponent<UnitHPBar>();
 
             SyncAnimator();
+        }
+
+        private void Update()
+        {
+            if (_isDead) return;
+            if (!_hasVisual && transform.position != LogicalPosition)
+                transform.position = LogicalPosition;
         }
 
         protected void SetAction(UnitAction action)

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3784442753580434118}
   - component: {fileID: 2054328708190876878}
   - component: {fileID: 8887416833979527067}
+  - component: {fileID: 282638544946344761}
   m_Layer: 0
   m_Name: "\u5251\u58EBenemy"
   m_TagString: Untagged
@@ -99,3 +100,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 2ad3dacadf5b4764fb1e362812b25eaf, type: 2}
   isEnemy: 1
+  defaultMoveDirection: {x: 0, y: 0}
+  _animator: {fileID: 0}
+--- !u!114 &282638544946344761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5534889972005926264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba4b38a3487521347b2938a20d504c94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spriteRenderer: {fileID: 2054328708190876878}
+  _smoothSpeed: 12

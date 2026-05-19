@@ -16,8 +16,8 @@ MonoBehaviour:
   prefab: {fileID: 626642080787768485, guid: 0fde46ec0e46c4945bb4d0d1917f5ec3, type: 3}
   icon: {fileID: 0}
   unitType: 0
-  maxHP: 20
-  attackPower: 2
+  maxHP: 600
+  attackPower: 40
   attackRange: 1
   attackIntervalInBeats: 8
   moveSpeed: 2
