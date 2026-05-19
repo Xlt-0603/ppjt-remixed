@@ -27,7 +27,7 @@ namespace PPCorps
                     MoveOneStepTowards(_currentTarget.LogicalPosition);
                 else
                 {
-                    LogicalPosition += (Vector3)_moveDirection * data.moveSpeed;
+                    LogicalPosition += (Vector3)_moveDirection * (data.moveSpeed * _tileSize);
                     FacingDirection = _moveDirection.x;
                     SetAction(UnitAction.Moving);
                 }

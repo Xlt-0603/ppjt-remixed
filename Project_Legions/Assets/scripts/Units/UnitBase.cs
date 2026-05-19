@@ -8,6 +8,7 @@ namespace PPCorps
         [SerializeField] protected bool isEnemy;
         [SerializeField] protected Vector2 defaultMoveDirection = Vector2.zero;
         [SerializeField] private Animator _animator;
+        [SerializeField] protected float _tileSize = 1.17f;
 
         protected int _currentHP;
         protected int _attackCooldown;
@@ -95,7 +96,7 @@ namespace PPCorps
                     MoveOneStepTowards(_currentTarget.LogicalPosition);
                 else
                 {
-                    LogicalPosition += (Vector3)defaultMoveDirection * data.moveSpeed;
+                    LogicalPosition += (Vector3)defaultMoveDirection * (data.moveSpeed * _tileSize);
                     FacingDirection = defaultMoveDirection.x;
                     SetAction(UnitAction.Moving);
                 }
@@ -140,7 +141,7 @@ namespace PPCorps
         {
             if (target == null) return false;
             float dist = Vector3.Distance(LogicalPosition, target.LogicalPosition);
-            return dist <= data.attackRange;
+            return dist <= data.attackRange * _tileSize;
         }
 
         protected UnitBase FindNearestEnemy()
@@ -166,9 +167,10 @@ namespace PPCorps
         {
             if (data == null) return;
             SetAction(UnitAction.Moving);
-            Vector3 dir = (target - LogicalPosition).normalized;
-            FacingDirection = dir.x;
-            LogicalPosition += dir * data.moveSpeed;
+            float xDir = Mathf.Sign(target.x - LogicalPosition.x);
+            if (xDir == 0) xDir = FacingDirection;
+            FacingDirection = xDir;
+            LogicalPosition += new Vector3(xDir * data.moveSpeed * _tileSize, 0, 0);
         }
 
         private void OnDestroy()

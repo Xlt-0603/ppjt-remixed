@@ -20,5 +20,5 @@ MonoBehaviour:
   attackPower: 80
   attackRange: 1
   attackIntervalInBeats: 8
-  moveSpeed: 2
+  moveSpeed: 1
   deployCost: 3
