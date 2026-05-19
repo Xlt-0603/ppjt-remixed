@@ -46,6 +46,9 @@ namespace PPCorps
 
             _hasVisual = GetComponent<UnitVisual>() != null;
 
+            var sr = GetComponent<SpriteRenderer>();
+            if (sr != null) sr.flipX = isEnemy;
+
             if (GameManager.Instance != null)
                 GameManager.Instance.RegisterUnit(this);
 
