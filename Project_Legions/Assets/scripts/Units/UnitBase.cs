@@ -13,6 +13,11 @@ namespace PPCorps
         protected UnitBase _currentTarget;
         protected bool _isDead;
         protected UnitAction _currentAction = UnitAction.Idle;
+        protected bool _isMoving;
+        protected GridPosition _gridPos;
+        protected Vector3 _moveFrom;
+        protected Vector3 _moveTo;
+        protected float _moveStartTime;
 
         public bool IsEnemy => isEnemy;
         public bool IsDead => _isDead;
@@ -20,7 +25,11 @@ namespace PPCorps
         public int MaxHP => data != null ? data.maxHP : 1;
         public UnitAction CurrentAction => _currentAction;
         public UnitBase CurrentTarget => _currentTarget;
-        public Vector3 TargetPosition { get; set; }
+        public GridPosition GridPos => _gridPos;
+        public bool IsMoving => _isMoving;
+        public Vector3 MoveFrom => _moveFrom;
+        public Vector3 MoveTo => _moveTo;
+        public float MoveStartTime => _moveStartTime;
 
         protected virtual void Start()
         {
@@ -35,12 +44,26 @@ namespace PPCorps
             if (GetComponent<UnitHPBar>() == null)
                 gameObject.AddComponent<UnitHPBar>();
 
-            TargetPosition = transform.position;
+            _gridPos = GridManager.Instance.WorldToGrid(transform.position);
+            GridManager.Instance.Occupy(_gridPos, this);
+            transform.position = GridManager.Instance.GridToWorld(_gridPos);
         }
 
         public virtual void OnBeat(int bar, int beat)
         {
             if (_isDead || data == null) return;
+
+            if (_isMoving)
+            {
+                float elapsed = Time.time - _moveStartTime;
+                float barDuration = 60f / GameManager.Instance.BPM;
+                if (elapsed >= barDuration)
+                {
+                    transform.position = _moveTo;
+                    _isMoving = false;
+                }
+                return;
+            }
 
             _currentTarget = FindNearestEnemy();
 
@@ -50,18 +73,45 @@ namespace PPCorps
             }
             else if (beat == 1)
             {
-                if (_currentTarget != null)
-                    MoveOneStepTowards(_currentTarget.TargetPosition);
-                else
-                {
-                    TargetPosition += (Vector3)defaultMoveDirection * data.moveSpeed;
-                    _currentAction = UnitAction.Moving;
-                }
+                TryMove();
             }
             else
             {
                 _currentAction = UnitAction.Idle;
             }
+        }
+
+        protected void TryMove()
+        {
+            int dir = isEnemy ? -1 : 1;
+            GridPosition dest = _gridPos + (dir * (int)Mathf.Max(1, data.moveSpeed));
+
+            if (!GridManager.Instance.IsInBounds(dest))
+            {
+                _currentAction = UnitAction.Idle;
+                return;
+            }
+
+            if (!GridManager.Instance.CanOccupy(dest, this))
+            {
+                var blockers = GridManager.Instance.GetOccupants(dest);
+                if (blockers.Count > 0 && !blockers[0]._isMoving)
+                {
+                    _currentTarget = blockers[0];
+                    TryAttack(blockers[0]);
+                }
+                return;
+            }
+
+            GridManager.Instance.Leave(_gridPos, this);
+            _gridPos = dest;
+            GridManager.Instance.Occupy(_gridPos, this);
+
+            _moveFrom = transform.position;
+            _moveTo = GridManager.Instance.GridToWorld(_gridPos);
+            _moveStartTime = Time.time;
+            _isMoving = true;
+            _currentAction = UnitAction.Moving;
         }
 
         protected virtual void TryAttack(UnitBase target)
@@ -89,6 +139,7 @@ namespace PPCorps
         {
             _isDead = true;
             _currentAction = UnitAction.Dead;
+            GridManager.Instance.Leave(_gridPos, this);
 
             if (GameManager.Instance != null)
                 GameManager.Instance.UnregisterUnit(this);
@@ -99,22 +150,22 @@ namespace PPCorps
         protected bool InAttackRange(UnitBase target)
         {
             if (target == null) return false;
-            float dist = Vector3.Distance(TargetPosition, target.TargetPosition);
-            return dist <= data.attackRange;
+            return GridPosition.Distance(_gridPos, target._gridPos) <= data.attackRange;
         }
 
         protected UnitBase FindNearestEnemy()
         {
             UnitBase nearest = null;
-            float minDist = float.MaxValue;
+            int minDist = int.MaxValue;
 
             var allUnits = GameManager.Instance.GetAllUnits();
             foreach (var unit in allUnits)
             {
-                if (unit == null || unit == this || unit.IsDead) continue;
-                if (unit.IsEnemy == isEnemy) continue;
+                if (unit == null || unit == this || unit._isDead) continue;
+                if (unit.isEnemy == isEnemy) continue;
+                if (unit._isMoving) continue;
 
-                float dist = Vector3.Distance(TargetPosition, unit.TargetPosition);
+                int dist = GridPosition.Distance(_gridPos, unit._gridPos);
                 if (dist < minDist)
                 {
                     minDist = dist;
@@ -125,17 +176,10 @@ namespace PPCorps
             return nearest;
         }
 
-        protected void MoveOneStepTowards(Vector3 target)
-        {
-            if (data == null) return;
-
-            _currentAction = UnitAction.Moving;
-            Vector3 dir = (target - TargetPosition).normalized;
-            TargetPosition += dir * data.moveSpeed;
-        }
-
         private void OnDestroy()
         {
+            if (!_isDead)
+                GridManager.Instance?.Leave(_gridPos, this);
             if (GameManager.Instance != null)
                 GameManager.Instance.UnregisterUnit(this);
         }

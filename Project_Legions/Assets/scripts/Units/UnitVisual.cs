@@ -6,10 +6,8 @@ namespace PPCorps
     public class UnitVisual : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
-        [SerializeField] private float _smoothTime = 0.04f;
 
         private UnitBase _unit;
-        private Vector3 _velocity;
 
         private void Start()
         {
@@ -20,19 +18,17 @@ namespace PPCorps
         {
             if (_unit == null || _unit.IsDead) return;
 
-            transform.position = Vector3.SmoothDamp(
-                transform.position,
-                _unit.TargetPosition,
-                ref _velocity,
-                _smoothTime
-            );
+            if (_unit.IsMoving)
+            {
+                float elapsed = Time.time - _unit.MoveStartTime;
+                float barDuration = 60f / GameManager.Instance.BPM;
+                float t = Mathf.Clamp01(elapsed / barDuration);
+                t = Mathf.SmoothStep(0, 1, t);
+                transform.position = Vector3.Lerp(_unit.MoveFrom, _unit.MoveTo, t);
+            }
 
             if (_spriteRenderer != null)
-            {
-                float facing = Mathf.Sign(_unit.TargetPosition.x - transform.position.x);
-                if (Mathf.Abs(facing) > 0.01f)
-                    _spriteRenderer.flipX = facing < 0;
-            }
+                _spriteRenderer.flipX = _unit.IsEnemy;
         }
     }
 }
