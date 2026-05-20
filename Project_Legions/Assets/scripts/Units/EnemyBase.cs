@@ -24,17 +24,16 @@ namespace PPCorps
             else if (beat == 1)
             {
                 if (_currentTarget != null)
-                    MoveOneStepTowards(_currentTarget.LogicalPosition);
+                    MoveOneStepTowards(_currentTarget.TargetPosition);
                 else
                 {
-                    LogicalPosition += (Vector3)_moveDirection * (data.moveSpeed * _tileSize);
-                    FacingDirection = _moveDirection.x;
-                    SetAction(UnitAction.Moving);
+                    TargetPosition += (Vector3)_moveDirection * data.moveSpeed;
+                    _currentAction = UnitAction.Moving;
                 }
             }
             else
             {
-                SetAction(UnitAction.Idle);
+                _currentAction = UnitAction.Idle;
             }
         }
     }

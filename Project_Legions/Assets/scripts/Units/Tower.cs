@@ -16,7 +16,7 @@ namespace PPCorps
             }
             else
             {
-                SetAction(UnitAction.Idle);
+                _currentAction = UnitAction.Idle;
             }
         }
     }

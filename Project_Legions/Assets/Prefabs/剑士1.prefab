@@ -98,11 +98,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96cbaf577b2ff634996b67a82efa6924, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: bb21ed97bb43ba14d8b9ffa99208f98c, type: 2}
+  data: {fileID: 11400000, guid: f7c789e52eb19894486624114a40ae57, type: 2}
   isEnemy: 0
   defaultMoveDirection: {x: 0, y: 0}
   _animator: {fileID: 0}
-  _tileSize: 1.17
+  _tileSize: 1.13
 --- !u!114 &6993059110081128225
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ namespace PPCorps
         public int attackPower = 2;
         public float attackRange = 1f;
         public int attackIntervalInBeats = 4;
-        public float moveSpeed = 1f;
+        public float moveSpeed = 0.15f;
         public int deployCost = 3;
     }
 }
