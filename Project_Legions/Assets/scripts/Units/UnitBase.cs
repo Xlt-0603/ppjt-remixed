@@ -9,7 +9,6 @@ namespace PPCorps
         [SerializeField] protected Vector2 defaultMoveDirection = Vector2.zero;
 
         protected int _currentHP;
-        protected int _attackCooldown;
         protected UnitBase _currentTarget;
         protected bool _isDead;
         protected UnitAction _currentAction = UnitAction.Idle;
@@ -62,22 +61,58 @@ namespace PPCorps
                     transform.position = _moveTo;
                     _isMoving = false;
                 }
+                else
+                    return;
+            }
+
+            if (beat == 1)
+            {
+                _currentTarget = FindNearestEnemy();
+
+                if (_currentTarget != null && InAttackRange(_currentTarget))
+                {
+                    // 攻击小节：按节奏谱攻击
+                }
+                else
+                {
+                    TryMove();
+                    return;
+                }
+            }
+
+            // 攻击小节：检查当前拍是否要攻击
+            if (!ShouldAttackOnBeat(beat))
+            {
+                _currentAction = UnitAction.Idle;
                 return;
             }
 
-            _currentTarget = FindNearestEnemy();
+            if (_currentTarget == null || _currentTarget._isDead || !InAttackRange(_currentTarget))
+                _currentTarget = FindNearestEnemy();
 
             if (_currentTarget != null && InAttackRange(_currentTarget))
             {
-                TryAttack(_currentTarget);
-            }
-            else if (beat == 1)
-            {
-                TryMove();
+                _currentAction = UnitAction.Attacking;
+                _currentTarget.TakeDamage(data.attackPower);
             }
             else
-            {
                 _currentAction = UnitAction.Idle;
+        }
+
+        protected bool ShouldAttackOnBeat(int beat)
+        {
+            if (data == null) return false;
+            switch (beat)
+            {
+                case 1: return data.attackOnBeat1;
+                case 2: return data.attackOnBeat2;
+                case 3: return data.attackOnBeat3;
+                case 4: return data.attackOnBeat4;
+                case 5: return data.attackOnBeat5;
+                case 6: return data.attackOnBeat6;
+                case 7: return data.attackOnBeat7;
+                case 8: return data.attackOnBeat8;
+                default: return false;
             }
         }
 
@@ -98,7 +133,7 @@ namespace PPCorps
                 if (blockers.Count > 0 && !blockers[0]._isMoving)
                 {
                     _currentTarget = blockers[0];
-                    TryAttack(blockers[0]);
+                    OnBeatHit();
                 }
                 return;
             }
@@ -114,18 +149,10 @@ namespace PPCorps
             _currentAction = UnitAction.Moving;
         }
 
-        protected virtual void TryAttack(UnitBase target)
+        private void OnBeatHit()
         {
-            if (_attackCooldown > 0)
-            {
-                _attackCooldown--;
-                _currentAction = UnitAction.Idle;
-                return;
-            }
-
             _currentAction = UnitAction.Attacking;
-            target.TakeDamage(data.attackPower);
-            _attackCooldown = data.attackIntervalInBeats;
+            _currentTarget.TakeDamage(data.attackPower);
         }
 
         public virtual void TakeDamage(int damage)
