@@ -7,6 +7,7 @@ namespace PPCorps
         [SerializeField] protected UnitData data;
         [SerializeField] protected bool isEnemy;
         [SerializeField] protected Vector2 defaultMoveDirection = Vector2.zero;
+        [SerializeField] protected Animator _animator;
 
         protected int _currentHP;
         protected int _attackCooldown;
@@ -44,9 +45,13 @@ namespace PPCorps
             if (GetComponent<UnitHPBar>() == null)
                 gameObject.AddComponent<UnitHPBar>();
 
+            if (_animator == null)
+                _animator = GetComponent<Animator>();
+
             _gridPos = GridManager.Instance.WorldToGrid(transform.position);
             GridManager.Instance.Occupy(_gridPos, this);
             transform.position = GridManager.Instance.GridToWorld(_gridPos);
+            SyncAnimator();
         }
 
         public virtual void OnBeat(int bar, int beat)
@@ -71,14 +76,12 @@ namespace PPCorps
             {
                 TryAttack(_currentTarget);
             }
-            else if (beat == 1)
+            else
             {
                 TryMove();
             }
-            else
-            {
-                _currentAction = UnitAction.Idle;
-            }
+
+            SyncAnimator();
         }
 
         protected void TryMove()
@@ -119,11 +122,12 @@ namespace PPCorps
             if (_attackCooldown > 0)
             {
                 _attackCooldown--;
-                _currentAction = UnitAction.Idle;
                 return;
             }
 
             _currentAction = UnitAction.Attacking;
+            if (_animator != null)
+                _animator.Play("\u5251\u58EB\u6345", 0, 0f);
             target.TakeDamage(data.attackPower);
             _attackCooldown = data.attackIntervalInBeats;
         }
@@ -139,6 +143,7 @@ namespace PPCorps
         {
             _isDead = true;
             _currentAction = UnitAction.Dead;
+            SyncAnimator();
             GridManager.Instance.Leave(_gridPos, this);
 
             if (GameManager.Instance != null)
@@ -174,6 +179,12 @@ namespace PPCorps
             }
 
             return nearest;
+        }
+
+        protected void SyncAnimator()
+        {
+            if (_animator == null) return;
+            _animator.SetInteger("Action", (int)_currentAction);
         }
 
         private void OnDestroy()

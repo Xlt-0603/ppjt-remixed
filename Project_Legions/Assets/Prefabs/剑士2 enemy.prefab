@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6285093277616509161}
   - component: {fileID: 226588199521407635}
   - component: {fileID: 5258957695490442119}
+  - component: {fileID: 93000004}
   m_Layer: 0
   m_Name: "\u5251\u58EB2 enemy"
   m_TagString: Untagged
@@ -174,9 +175,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 0}
-  isEnemy: 0
-  defaultMoveDirection: {x: 0, y: 0}
-  _animator: {fileID: 0}
+isEnemy: 1
+defaultMoveDirection: {x: 0, y: 0}
+_animator: {fileID: 0}
 --- !u!114 &226588199521407635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,3 +207,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 0}
   _smoothSpeed: 12
+--- !u!95 &93000004
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6666266967036799093}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3f8c9bb6b76004b4a9d265902f6ce4bc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSampling: 1
+  m_KeepAnimatorStateOnDisable: 0

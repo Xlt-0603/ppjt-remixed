@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b540171adb2547148919d66567cc639e, type: 3}
-  m_Name: "\u5251\u58EB"
+  m_Name: "\u5251\u58EB1"
   m_EditorClassIdentifier: 
   unitName: 
   prefab: {fileID: 0}
   icon: {fileID: 0}
   unitType: 0
-  maxHP: 10
+  maxHP: 100
   attackPower: 2
   attackRange: 1
   attackIntervalInBeats: 4
