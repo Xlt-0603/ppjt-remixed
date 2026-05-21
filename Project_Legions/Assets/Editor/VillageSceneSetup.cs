@@ -32,7 +32,7 @@ namespace PPCorps.EditorTools
             camObj.transform.position = new Vector3(0, -1.6667f, -10);
             camObj.tag = "MainCamera";
             var camCtrl = camObj.AddComponent<VillageCameraController>();
-            camCtrl.SetBounds(-60f, 33.3333f);
+            camCtrl.SetBounds(-49.5f, 26.6f);
             SetPrivateField(camCtrl, "_scrollAmount", 40f);
             camObj.AddComponent<Physics2DRaycaster>();
 
@@ -152,7 +152,7 @@ namespace PPCorps.EditorTools
             if (groundSprite != null)
             {
                 groundSR.sprite = groundSprite;
-                groundSR.color = new Color(0.3f, 0.55f, 0.2f);
+                groundSR.color = Color.white;
                 groundSR.sortingOrder = -1;
             }
             groundObj.transform.localScale = new Vector3(233.3333f, 5f, 1);
