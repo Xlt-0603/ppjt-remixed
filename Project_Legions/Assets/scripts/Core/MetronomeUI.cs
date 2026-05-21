@@ -13,7 +13,11 @@ namespace PPCorps
         [SerializeField] private Color _beatOff = new Color(0.2f, 0.2f, 0.2f);
         [SerializeField] private Color _beatCurrent = new Color(0.1f, 0.6f, 1f);
 
+        [Header("折叠控制")]
+        [SerializeField] private int _foldButtonSize = 30;
+
         private GUIStyle _labelStyle;
+        private bool _isPanelExpanded = true;
 
         private void Awake()
         {
@@ -28,8 +32,58 @@ namespace PPCorps
             GameManager gm = GameManager.Instance;
             if (gm == null) return;
 
-            DrawBeatVisualizer(gm);
-            if (_showDebugPanel) DrawDebugPanel(gm);
+            if (!_showDebugPanel)
+            {
+                DrawBeatVisualizer(gm);
+                return;
+            }
+
+            if (_isPanelExpanded)
+            {
+                DrawBeatVisualizer(gm);
+                DrawDebugPanel(gm);
+            }
+            else
+            {
+                DrawCollapsedBar(gm);
+            }
+        }
+
+        private void DrawPanelExpandButton(bool collapsed)
+        {
+            string label = collapsed ? "▶" : "◀";
+            float bx = collapsed ? 10 : 770;
+            float by = collapsed ? 10 : 10 + _beatSquareSize + 50;
+            if (GUI.Button(new Rect(bx, by, _foldButtonSize, _foldButtonSize), label))
+                _isPanelExpanded = !_isPanelExpanded;
+        }
+
+        private void DrawCollapsedBar(GameManager gm)
+        {
+            float barY = 16;
+            float barH = _beatSquareSize + 42;
+
+            GUI.Box(new Rect(0, barY, Screen.width, barH), "");
+
+            int totalWidth = 8 * _beatSquareSize + 7 * _beatGap;
+            float startX = (Screen.width - totalWidth) / 2f;
+
+            for (int i = 0; i < 8; i++)
+            {
+                Rect rect = new Rect(startX + i * (_beatSquareSize + _beatGap), barY + 4, _beatSquareSize, _beatSquareSize);
+                bool isCurrentBeat = (i + 1) == gm.Beat;
+                bool isPastBeat = (i + 1) < gm.Beat;
+                GUI.color = isCurrentBeat ? _beatCurrent : (isPastBeat ? _beatOn : _beatOff);
+                GUI.DrawTexture(rect, Texture2D.whiteTexture);
+                GUI.color = Color.white;
+                GUI.Label(rect, $"{i + 1}", _labelStyle);
+            }
+
+            float barCenterX = startX + totalWidth / 2f;
+            GUI.Label(new Rect(barCenterX - 120, barY + _beatSquareSize + 8, 240, 28),
+                $"小节 {gm.Bar} | BPM: {(int)gm.BPM}", _labelStyle);
+
+            DrawPanelExpandButton(true);
         }
 
         private void DrawBeatVisualizer(GameManager gm)
@@ -79,7 +133,15 @@ namespace PPCorps
             GUI.skin.button.fontSize = 26;
             GUI.skin.box.fontSize = 30;
 
-            GUI.Box(new Rect(x, y, w, h), "♩ 节拍器");
+            GUI.Box(new Rect(x, y, w, h), "");
+
+            int origFontSize = GUI.skin.label.fontSize;
+            GUI.skin.label.fontSize = 20;
+            GUI.Label(new Rect(x + 10, y + 6, 100, 28), "♩ 节拍器");
+            GUI.skin.label.fontSize = origFontSize;
+
+            if (GUI.Button(new Rect(x + w - _foldButtonSize - 6, y + 4, _foldButtonSize, _foldButtonSize), "▲"))
+                _isPanelExpanded = false;
 
             GUILayout.BeginArea(new Rect(x + 10, y + 40, w - 20, h - 50));
             GUILayout.Label($"BPM: {(int)gm.BPM}", GUILayout.Height(36));
