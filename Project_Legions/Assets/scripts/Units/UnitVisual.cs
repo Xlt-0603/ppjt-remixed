@@ -8,13 +8,22 @@ namespace PPCorps
         [SerializeField] private SpriteRenderer _spriteRenderer;
 
         private UnitBase _unit;
+        private Animator _animator;
         private Vector3 _prevFrom;
         private Vector3 _prevTo;
         private float _animStartTime;
+        private bool _wasMoving;
+        private Sprite _defaultSprite;
+        private int _lastAction = -1;
+
+        private static readonly int ActionParam = Animator.StringToHash("Action");
 
         private void Start()
         {
             _unit = GetComponent<UnitBase>();
+            _animator = GetComponent<Animator>();
+            if (_spriteRenderer != null)
+                _defaultSprite = _spriteRenderer.sprite;
         }
 
         private void Update()
@@ -36,9 +45,29 @@ namespace PPCorps
                 t = Mathf.SmoothStep(0, 1, t);
                 transform.position = Vector3.Lerp(_unit.MoveFrom, _unit.MoveTo, t);
             }
+            else if (_wasMoving)
+            {
+                transform.position = _unit.MoveTo;
+            }
+
+            _wasMoving = _unit.IsMoving;
+
+            int currentAction = (int)_unit.CurrentAction;
+            if (_animator != null && _animator.runtimeAnimatorController != null)
+            {
+                if (currentAction != _lastAction)
+                {
+                    _animator.SetInteger(ActionParam, currentAction);
+                    _lastAction = currentAction;
+                }
+            }
 
             if (_spriteRenderer != null)
+            {
                 _spriteRenderer.flipX = _unit.IsEnemy;
+                if (_spriteRenderer.sprite == null && _defaultSprite != null)
+                    _spriteRenderer.sprite = _defaultSprite;
+            }
         }
     }
 }

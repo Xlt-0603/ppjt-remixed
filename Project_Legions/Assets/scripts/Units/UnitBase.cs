@@ -18,6 +18,7 @@ namespace PPCorps
         protected Vector3 _moveTo;
         protected int _moveStartBar;
         protected int _moveStartBeat;
+        protected float _originY;
 
         public bool IsEnemy => isEnemy;
         public bool IsDead => _isDead;
@@ -47,6 +48,7 @@ namespace PPCorps
                 gameObject.AddComponent<UnitHPBar>();
 
             _gridPos = GridManager.Instance.WorldToGrid(transform.position);
+            _originY = transform.position.y;
             for (int i = 0; i < OccupiedCols; i++)
                 GridManager.Instance.Occupy(_gridPos + i, this);
         }
@@ -62,6 +64,7 @@ namespace PPCorps
                 if (elapsed >= 8)
                 {
                     _isMoving = false;
+                    transform.position = _moveTo;
                 }
                 else
                     return;
@@ -147,7 +150,7 @@ namespace PPCorps
             _moveFrom = transform.position;
             _moveTo = new Vector3(
                 GridManager.Instance.GridToWorldX(_gridPos),
-                transform.position.y, 0
+                _originY, 0
             );
             _moveStartBar = GameManager.Instance.Bar;
             _moveStartBeat = GameManager.Instance.Beat;
