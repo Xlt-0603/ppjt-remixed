@@ -175,9 +175,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 0}
-isEnemy: 1
-defaultMoveDirection: {x: 0, y: 0}
-_animator: {fileID: 0}
+  isEnemy: 1
+  defaultMoveDirection: {x: 0, y: 0}
 --- !u!114 &226588199521407635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,7 +205,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 0}
-  _smoothSpeed: 12
 --- !u!95 &93000004
 Animator:
   serializedVersion: 5

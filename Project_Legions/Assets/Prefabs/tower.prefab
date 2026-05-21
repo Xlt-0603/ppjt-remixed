@@ -102,8 +102,6 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: e5879cbc2ff7fb0489a33a161642da05, type: 2}
   isEnemy: 0
   defaultMoveDirection: {x: 1, y: 0}
-  _animator: {fileID: 0}
-  _tileSize: 1.17
 --- !u!114 &974818523338156858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,4 +130,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 3389634171219273220}
-  _smoothSpeed: 12
