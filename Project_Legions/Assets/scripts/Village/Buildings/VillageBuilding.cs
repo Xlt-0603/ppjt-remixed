@@ -8,6 +8,7 @@ namespace PPCorps
         [SerializeField] private BuildingDataSO _data;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private int _currentLevel = 1;
+        [SerializeField] private string _panelName;
 
         public BuildingType Type => _data != null ? _data.buildingType : BuildingType.VillageCenter;
         public int CurrentLevel => _currentLevel;
@@ -23,7 +24,25 @@ namespace PPCorps
                 _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        private void OnMouseDown()
+        private void Start()
+        {
+            OnClicked += b =>
+            {
+                Debug.Log($"[村庄] 点击了 {b.name}");
+                if (!string.IsNullOrEmpty(_panelName))
+                {
+                    var mgr = VillageManager.Instance;
+                    if (mgr != null && mgr.PanelRoot != null)
+                    {
+                        var panel = mgr.PanelRoot.transform.Find(_panelName)?.gameObject;
+                        if (panel != null)
+                            mgr.OpenPanel(panel);
+                    }
+                }
+            };
+        }
+
+        public void NotifyClicked()
         {
             OnClicked?.Invoke(this);
         }

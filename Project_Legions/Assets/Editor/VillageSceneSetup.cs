@@ -26,13 +26,14 @@ namespace PPCorps.EditorTools
             var camObj = CreateGameObject("Main Camera", typeof(Camera), typeof(AudioListener));
             var cam = camObj.GetComponent<Camera>();
             cam.orthographic = true;
-            cam.orthographicSize = 3f;
+            cam.orthographicSize = 3.5f;
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.55f, 0.75f, 1f); // 天空蓝
             camObj.transform.position = new Vector3(0, -0.5f, -10);
             camObj.tag = "MainCamera";
             var camCtrl = camObj.AddComponent<VillageCameraController>();
-            camCtrl.SetBounds(-20f, 15f);
+            camCtrl.SetBounds(-18f, 10f);
+            camObj.AddComponent<Physics2DRaycaster>();
 
             // ==================== 2. Canvas ====================
             var canvasObj = CreateGameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
@@ -161,17 +162,17 @@ namespace PPCorps.EditorTools
 
             var buildingDefs = new[]
             {
-                new BuildingDef("战斗中心", BuildingType.CombatCenter, "战斗中心.png", new Vector3(-12f, -0.5f, 0),
+                new BuildingDef("战斗中心", BuildingType.CombatCenter, "战斗中心.png", new Vector3(-10.23f, -1.11f, 0),
                     "Panel_Combat", typeof(CombatPanelUI)),
-                new BuildingDef("食堂", BuildingType.Canteen, "食堂.png", new Vector3(-6f, -1.25f, 0),
+                new BuildingDef("食堂", BuildingType.Canteen, "食堂.png", new Vector3(-4.98f, -1.325f, 0),
                     "Panel_Canteen", typeof(CanteenPanelUI)),
-                new BuildingDef("渔场", BuildingType.Fishing, "渔场.png", new Vector3(0f, -1.25f, 0),
+                new BuildingDef("渔场", BuildingType.Fishing, "渔场.png", new Vector3(0f, -1.55f, 0),
                     "Panel_Fishing", typeof(FishingPanelUI)),
-                new BuildingDef("研究所", BuildingType.ResearchLab, "研究所.png", new Vector3(6f, -0.75f, 0),
+                new BuildingDef("研究所", BuildingType.ResearchLab, "研究所.png", new Vector3(4.97f, -1.195f, 0),
                     "Panel_Research", typeof(ResearchPanelUI)),
-                new BuildingDef("豆网", BuildingType.Shop, "豆网.png", new Vector3(12f, -1.25f, 0),
+                new BuildingDef("豆网", BuildingType.Shop, "豆网.png", new Vector3(8.58f, -1.93f, 0),
                     "Panel_Shop", typeof(ShopPanelUI)),
-                new BuildingDef("村中心", BuildingType.VillageCenter, "村中心.png", new Vector3(-18f, -0.75f, 1f),
+                new BuildingDef("村中心", BuildingType.VillageCenter, "村中心.png", new Vector3(-15.455f, -0.95f, 1f),
                     null, null),
             };
 
@@ -318,6 +319,12 @@ namespace PPCorps.EditorTools
 
             // Collider
             var bc = buildingObj.AddComponent<BoxCollider2D>();
+            if (sprite != null)
+            {
+                float w = sprite.rect.width / sprite.pixelsPerUnit;
+                float h = sprite.rect.height / sprite.pixelsPerUnit;
+                bc.size = new Vector2(w, h);
+            }
 
             // VillageBuilding
             var vb = buildingObj.AddComponent<VillageBuilding>();
@@ -338,6 +345,7 @@ namespace PPCorps.EditorTools
             SetPrivateField(vb, "_data", so);
             SetPrivateField(vb, "_spriteRenderer", sr);
             SetPrivateField(vb, "_currentLevel", 1);
+            SetPrivateField(vb, "_panelName", def.panelName);
 
             // --- 创建对应的 UI 面板 ---
             if (def.panelName != null && def.panelType != null)
@@ -402,20 +410,7 @@ namespace PPCorps.EditorTools
                 }
             }
 
-            // --- 点击建筑 -> 打开面板 ---
-            if (def.panelName != null)
-            {
-                string capturedPanelName = def.panelName;
-                vb.OnClicked += (b) =>
-                {
-                    if (vm != null && vm.PanelRoot != null)
-                    {
-                        var panel = vm.PanelRoot.transform.Find(capturedPanelName)?.gameObject;
-                        if (panel != null)
-                            vm.OpenPanel(panel);
-                    }
-                };
-            }
+            // 面板打开逻辑已移至 VillageBuilding.Start()
         }
 
         private static GameObject CreateSimpleButton(Transform parent, string name,
@@ -437,6 +432,20 @@ namespace PPCorps.EditorTools
             txt.color = Color.white;
             btn.targetGraphic = txt;
             return obj;
+        }
+
+        private static Vector4 GetVisualPadding(BuildingType type)
+        {
+            return type switch
+            {
+                BuildingType.CombatCenter  => new Vector4(0, 122, 0, 123),
+                BuildingType.Canteen       => new Vector4(0, 15, 0, 64),
+                BuildingType.Fishing       => new Vector4(4, 60, 4, 60),
+                BuildingType.ResearchLab   => new Vector4(2, 89, 5, 75),
+                BuildingType.Shop          => new Vector4(273, 136, 336, 223),
+                BuildingType.VillageCenter => new Vector4(3, 40, 5, 158),
+                _ => Vector4.zero
+            };
         }
 
         private static void SetPrivateField(object target, string fieldName, object value)

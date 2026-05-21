@@ -20,6 +20,8 @@ namespace PPCorps
         [SerializeField] private VillageToolbarUI _toolbar;
         [SerializeField] private GameObject _panelRoot;
 
+        private Vector3 _mouseDownPos;
+
         public int VillageLevel => _villageLevel;
         public CurrencyData Currency => _currency;
         public VillageState State { get; private set; }
@@ -47,6 +49,54 @@ namespace PPCorps
             if (_dataManager != null)
                 _dataManager.LoadData();
             RefreshUI();
+        }
+
+        private void Update()
+        {
+            if (Input.GetMouseButtonDown(0))
+                _mouseDownPos = Input.mousePosition;
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (Vector3.Distance(_mouseDownPos, Input.mousePosition) > 10f)
+                {
+                    Debug.Log($"[VillageManager] 拖拽忽略 (移动 {Vector3.Distance(_mouseDownPos, Input.mousePosition):F1}px)");
+                    return;
+                }
+
+                Camera cam = Camera.main;
+                if (cam == null)
+                {
+                    Debug.LogError("[VillageManager] Camera.main 为空!");
+                    return;
+                }
+
+                Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
+
+                Debug.Log($"[VillageManager] 点击检测: ray origin={ray.origin}, direction={ray.direction}, hit={hit.collider?.name}");
+
+                if (hit.collider != null)
+                {
+                    Debug.Log($"[VillageManager] 碰撞体: {hit.collider.name} (layer={hit.collider.gameObject.layer})");
+
+                    // 列出该对象上所有组件
+                    var comps = hit.collider.GetComponents<Component>();
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                    sb.Append("[VillageManager] 组件: ");
+                    foreach (var c in comps)
+                        sb.Append(c?.GetType().Name ?? "null").Append(" ");
+                    Debug.Log(sb.ToString());
+
+                    if (hit.collider.TryGetComponent<VillageBuilding>(out var building))
+                    {
+                        Debug.Log($"[VillageManager] VillageBuilding 已找到, 调用 NotifyClicked");
+                        building.NotifyClicked();
+                    }
+                    else
+                        Debug.LogError($"[VillageManager] 对象上没有 VillageBuilding 组件 (共 {comps.Length} 个组件)");
+                }
+            }
         }
 
         public void RefreshUI()
