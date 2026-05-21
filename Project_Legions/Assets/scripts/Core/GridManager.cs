@@ -32,9 +32,7 @@ namespace PPCorps
             => pos.col >= 0 && pos.col < _cols;
 
         public int Cols => _cols;
-
-        public bool IsTowerCell(GridPosition pos)
-            => pos.col == 2 || pos.col == 3 || pos.col == 20 || pos.col == 21;
+        public float CellSize => _cellSize;
 
         public void Occupy(GridPosition pos, UnitBase unit)
         {
@@ -64,17 +62,10 @@ namespace PPCorps
             var list = GetOccupants(pos);
             if (list.Count == 0) return true;
 
-            if (IsTowerCell(pos))
-            {
-                bool hasTower = list.Any(u => u is Tower);
-                bool isTower = unit is Tower;
+            bool hasNonTower = list.Any(u => !(u is Tower));
+            if (!(unit is Tower) && hasNonTower) return false;
 
-                if (hasTower && isTower) return false;
-                if (list.Count >= 2) return false;
-                return true;
-            }
-
-            return false;
+            return true;
         }
     }
 }

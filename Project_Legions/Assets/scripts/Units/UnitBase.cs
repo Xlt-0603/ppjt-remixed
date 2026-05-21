@@ -14,7 +14,6 @@ namespace PPCorps
         protected UnitAction _currentAction = UnitAction.Idle;
         protected bool _isMoving;
         protected GridPosition _gridPos;
-        protected float _originY;
         protected Vector3 _moveFrom;
         protected Vector3 _moveTo;
         protected int _moveStartBar;
@@ -32,6 +31,7 @@ namespace PPCorps
         public Vector3 MoveTo => _moveTo;
         public int MoveStartBar => _moveStartBar;
         public int MoveStartBeat => _moveStartBeat;
+        public virtual int OccupiedCols => 1;
 
         protected virtual void Start()
         {
@@ -46,13 +46,9 @@ namespace PPCorps
             if (GetComponent<UnitHPBar>() == null)
                 gameObject.AddComponent<UnitHPBar>();
 
-            _originY = transform.position.y;
             _gridPos = GridManager.Instance.WorldToGrid(transform.position);
-            GridManager.Instance.Occupy(_gridPos, this);
-            transform.position = new Vector3(
-                GridManager.Instance.GridToWorldX(_gridPos),
-                _originY, 0
-            );
+            for (int i = 0; i < OccupiedCols; i++)
+                GridManager.Instance.Occupy(_gridPos + i, this);
         }
 
         public virtual void OnBeat(int bar, int beat)
@@ -65,7 +61,6 @@ namespace PPCorps
                             + (GameManager.Instance.Beat - _moveStartBeat);
                 if (elapsed >= 8)
                 {
-                    transform.position = _moveTo;
                     _isMoving = false;
                 }
                 else
@@ -134,7 +129,7 @@ namespace PPCorps
             if (!GridManager.Instance.CanOccupy(dest, this))
             {
                 var blockers = GridManager.Instance.GetOccupants(dest);
-                if (blockers.Count > 0 && !blockers[0]._isMoving)
+                if (blockers.Count > 0 && blockers[0].isEnemy != isEnemy)
                 {
                     _currentTarget = blockers[0];
                     _currentAction = UnitAction.Attacking;
@@ -143,14 +138,16 @@ namespace PPCorps
                 return;
             }
 
-            GridManager.Instance.Leave(_gridPos, this);
+            for (int i = 0; i < OccupiedCols; i++)
+                GridManager.Instance.Leave(_gridPos + i, this);
             _gridPos = dest;
-            GridManager.Instance.Occupy(_gridPos, this);
+            for (int i = 0; i < OccupiedCols; i++)
+                GridManager.Instance.Occupy(_gridPos + i, this);
 
             _moveFrom = transform.position;
             _moveTo = new Vector3(
                 GridManager.Instance.GridToWorldX(_gridPos),
-                _originY, 0
+                transform.position.y, 0
             );
             _moveStartBar = GameManager.Instance.Bar;
             _moveStartBeat = GameManager.Instance.Beat;
@@ -169,7 +166,8 @@ namespace PPCorps
         {
             _isDead = true;
             _currentAction = UnitAction.Dead;
-            GridManager.Instance.Leave(_gridPos, this);
+            for (int i = 0; i < OccupiedCols; i++)
+                GridManager.Instance.Leave(_gridPos + i, this);
 
             if (GameManager.Instance != null)
                 GameManager.Instance.UnregisterUnit(this);
@@ -180,7 +178,12 @@ namespace PPCorps
         protected bool InAttackRange(UnitBase target)
         {
             if (target == null) return false;
-            return GridPosition.Distance(_gridPos, target._gridPos) <= data.attackRange;
+            for (int i = 0; i < OccupiedCols; i++)
+            {
+                if (GridPosition.Distance(_gridPos + i, target._gridPos) <= data.attackRange)
+                    return true;
+            }
+            return false;
         }
 
         protected UnitBase FindNearestEnemy()
@@ -193,7 +196,6 @@ namespace PPCorps
             {
                 if (unit == null || unit == this || unit._isDead) continue;
                 if (unit.isEnemy == isEnemy) continue;
-                if (unit._isMoving) continue;
 
                 int dist = GridPosition.Distance(_gridPos, unit._gridPos);
                 if (dist < minDist)
@@ -209,7 +211,8 @@ namespace PPCorps
         private void OnDestroy()
         {
             if (!_isDead)
-                GridManager.Instance?.Leave(_gridPos, this);
+                for (int i = 0; i < OccupiedCols; i++)
+                    GridManager.Instance?.Leave(_gridPos + i, this);
             if (GameManager.Instance != null)
                 GameManager.Instance.UnregisterUnit(this);
         }

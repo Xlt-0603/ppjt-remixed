@@ -4,6 +4,8 @@ namespace PPCorps
 {
     public class Tower : UnitBase
     {
+        public override int OccupiedCols => 1;
+
         public override void OnBeat(int bar, int beat)
         {
             if (_isDead || data == null) return;
