@@ -45,6 +45,28 @@ namespace PPCorps
         public void NotifyClicked()
         {
             OnClicked?.Invoke(this);
+            StartCoroutine(ClickPopAnimation());
+        }
+
+        private System.Collections.IEnumerator ClickPopAnimation()
+        {
+            float duration = 0.06f;
+            Vector3 from = Vector3.one;
+            Vector3 to = Vector3.one * 1.05f;
+
+            for (float t = 0; t < duration; t += Time.deltaTime)
+            {
+                transform.localScale = Vector3.Lerp(from, to, t / duration);
+                yield return null;
+            }
+            transform.localScale = to;
+
+            for (float t = 0; t < duration; t += Time.deltaTime)
+            {
+                transform.localScale = Vector3.Lerp(to, from, t / duration);
+                yield return null;
+            }
+            transform.localScale = from;
         }
 
         public void Init(BuildingDataSO data, int level)
