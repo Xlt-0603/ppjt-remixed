@@ -12,12 +12,16 @@ namespace PPCorps
 
             if (_currentTarget != null && InAttackRange(_currentTarget))
             {
-                TryAttack(_currentTarget);
+                if (ShouldAttackOnBeat(beat))
+                {
+                    _currentAction = UnitAction.Attacking;
+                    _currentTarget.TakeDamage(data.attackPower);
+                }
+                else
+                    _currentAction = UnitAction.Idle;
             }
             else
-            {
                 _currentAction = UnitAction.Idle;
-            }
         }
     }
 }

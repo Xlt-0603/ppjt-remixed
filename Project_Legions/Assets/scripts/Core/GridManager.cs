@@ -16,13 +16,9 @@ namespace PPCorps
 
         private void Awake() => Instance = this;
 
-        public Vector3 GridToWorld(GridPosition pos)
+        public float GridToWorldX(GridPosition pos)
         {
-            return new Vector3(
-                _gridOrigin.x + pos.col * _cellSize,
-                _gridOrigin.y,
-                0
-            );
+            return _gridOrigin.x + pos.col * _cellSize;
         }
 
         public GridPosition WorldToGrid(Vector3 worldPos)

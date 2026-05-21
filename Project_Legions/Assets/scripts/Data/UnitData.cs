@@ -11,9 +11,18 @@ namespace PPCorps
         public UnitType unitType;
         public int maxHP = 10;
         public int attackPower = 2;
-        public float attackRange = 1f;
-        public int attackIntervalInBeats = 4;
-        public float moveSpeed = 0.15f;
+        public int attackRange = 1;
+        public int moveSpeed = 1;
         public int deployCost = 3;
+
+        [Header("攻击节奏（8拍）")]
+        public bool attackOnBeat1 = true;
+        public bool attackOnBeat2;
+        public bool attackOnBeat3;
+        public bool attackOnBeat4;
+        public bool attackOnBeat5 = true;
+        public bool attackOnBeat6;
+        public bool attackOnBeat7;
+        public bool attackOnBeat8;
     }
 }
