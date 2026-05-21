@@ -14,9 +14,11 @@ namespace PPCorps
         protected UnitAction _currentAction = UnitAction.Idle;
         protected bool _isMoving;
         protected GridPosition _gridPos;
+        protected float _originY;
         protected Vector3 _moveFrom;
         protected Vector3 _moveTo;
-        protected float _moveStartTime;
+        protected int _moveStartBar;
+        protected int _moveStartBeat;
 
         public bool IsEnemy => isEnemy;
         public bool IsDead => _isDead;
@@ -28,7 +30,8 @@ namespace PPCorps
         public bool IsMoving => _isMoving;
         public Vector3 MoveFrom => _moveFrom;
         public Vector3 MoveTo => _moveTo;
-        public float MoveStartTime => _moveStartTime;
+        public int MoveStartBar => _moveStartBar;
+        public int MoveStartBeat => _moveStartBeat;
 
         protected virtual void Start()
         {
@@ -43,9 +46,13 @@ namespace PPCorps
             if (GetComponent<UnitHPBar>() == null)
                 gameObject.AddComponent<UnitHPBar>();
 
+            _originY = transform.position.y;
             _gridPos = GridManager.Instance.WorldToGrid(transform.position);
             GridManager.Instance.Occupy(_gridPos, this);
-            transform.position = GridManager.Instance.GridToWorld(_gridPos);
+            transform.position = new Vector3(
+                GridManager.Instance.GridToWorldX(_gridPos),
+                _originY, 0
+            );
         }
 
         public virtual void OnBeat(int bar, int beat)
@@ -54,9 +61,9 @@ namespace PPCorps
 
             if (_isMoving)
             {
-                float elapsed = Time.time - _moveStartTime;
-                float barDuration = 60f / GameManager.Instance.BPM;
-                if (elapsed >= barDuration)
+                int elapsed = (GameManager.Instance.Bar - _moveStartBar) * 8
+                            + (GameManager.Instance.Beat - _moveStartBeat);
+                if (elapsed >= 8)
                 {
                     transform.position = _moveTo;
                     _isMoving = false;
@@ -70,9 +77,7 @@ namespace PPCorps
                 _currentTarget = FindNearestEnemy();
 
                 if (_currentTarget != null && InAttackRange(_currentTarget))
-                {
-                    // 攻击小节：按节奏谱攻击
-                }
+                    _isMoving = false;
                 else
                 {
                     TryMove();
@@ -80,7 +85,6 @@ namespace PPCorps
                 }
             }
 
-            // 攻击小节：检查当前拍是否要攻击
             if (!ShouldAttackOnBeat(beat))
             {
                 _currentAction = UnitAction.Idle;
@@ -133,7 +137,8 @@ namespace PPCorps
                 if (blockers.Count > 0 && !blockers[0]._isMoving)
                 {
                     _currentTarget = blockers[0];
-                    OnBeatHit();
+                    _currentAction = UnitAction.Attacking;
+                    _currentTarget.TakeDamage(data.attackPower);
                 }
                 return;
             }
@@ -143,16 +148,14 @@ namespace PPCorps
             GridManager.Instance.Occupy(_gridPos, this);
 
             _moveFrom = transform.position;
-            _moveTo = GridManager.Instance.GridToWorld(_gridPos);
-            _moveStartTime = Time.time;
+            _moveTo = new Vector3(
+                GridManager.Instance.GridToWorldX(_gridPos),
+                _originY, 0
+            );
+            _moveStartBar = GameManager.Instance.Bar;
+            _moveStartBeat = GameManager.Instance.Beat;
             _isMoving = true;
             _currentAction = UnitAction.Moving;
-        }
-
-        private void OnBeatHit()
-        {
-            _currentAction = UnitAction.Attacking;
-            _currentTarget.TakeDamage(data.attackPower);
         }
 
         public virtual void TakeDamage(int damage)
