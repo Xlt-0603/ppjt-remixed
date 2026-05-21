@@ -7,8 +7,11 @@ namespace PPCorps
         [SerializeField] protected UnitData data;
         [SerializeField] protected bool isEnemy;
         [SerializeField] protected Vector2 defaultMoveDirection = Vector2.zero;
+        [SerializeField] protected Animator _animator;
 
         protected int _currentHP;
+        protected int _attackAnimBeats;
+        protected bool _justArrived;
         protected UnitBase _currentTarget;
         protected bool _isDead;
         protected UnitAction _currentAction = UnitAction.Idle;
@@ -46,14 +49,20 @@ namespace PPCorps
             if (GetComponent<UnitHPBar>() == null)
                 gameObject.AddComponent<UnitHPBar>();
 
+            if (_animator == null)
+                _animator = GetComponent<Animator>();
+
             _gridPos = GridManager.Instance.WorldToGrid(transform.position);
             for (int i = 0; i < OccupiedCols; i++)
                 GridManager.Instance.Occupy(_gridPos + i, this);
+            SyncAnimator();
         }
 
         public virtual void OnBeat(int bar, int beat)
         {
             if (_isDead || data == null) return;
+
+            _justArrived = false;
 
             if (_isMoving)
             {
@@ -62,16 +71,54 @@ namespace PPCorps
                 if (elapsed >= 8)
                 {
                     _isMoving = false;
+                    _justArrived = true;
                 }
                 else
                     return;
             }
 
+            if (_attackAnimBeats > 0)
+                _attackAnimBeats--;
+
+            _currentTarget = FindNearestEnemy();
+            bool inCombat = _currentTarget != null && InAttackRange(_currentTarget);
+
+            if (data.attackAnimBeats > 0 && !inCombat)
+                _attackAnimBeats = 0;
+
+            if (data.attackAnimBeats > 0 && inCombat)
+            {
+                if (_attackAnimBeats > 0)
+                {
+                    if (!ShouldAttackOnBeat(beat))
+                    {
+                        _currentAction = UnitAction.Attacking;
+                        SyncAnimator();
+                        return;
+                    }
+                }
+                else
+                {
+                    for (int i = 1; i <= 2; i++)
+                    {
+                        int cb = beat + i;
+                        if (cb > 8) cb -= 8;
+                        if (ShouldAttackOnBeat(cb))
+                        {
+                            _currentAction = UnitAction.Attacking;
+                            if (_animator != null)
+                                _animator.Play("\u5251\u58EB\u6345", 0, 0f);
+                            _attackAnimBeats = data.attackAnimBeats;
+                            SyncAnimator();
+                            return;
+                        }
+                    }
+                }
+            }
+
             if (beat == 1)
             {
-                _currentTarget = FindNearestEnemy();
-
-                if (_currentTarget != null && InAttackRange(_currentTarget))
+                if (inCombat)
                     _isMoving = false;
                 else
                 {
@@ -83,19 +130,36 @@ namespace PPCorps
             if (!ShouldAttackOnBeat(beat))
             {
                 _currentAction = UnitAction.Idle;
+                SyncAnimator();
                 return;
             }
 
-            if (_currentTarget == null || _currentTarget._isDead || !InAttackRange(_currentTarget))
-                _currentTarget = FindNearestEnemy();
-
             if (_currentTarget != null && InAttackRange(_currentTarget))
             {
-                _currentAction = UnitAction.Attacking;
-                _currentTarget.TakeDamage(data.attackPower);
+                if (_justArrived)
+                {
+                    _currentAction = UnitAction.Idle;
+                }
+                else
+                {
+                    bool extended = data.attackAnimBeats > 0;
+                    if (!extended || _attackAnimBeats <= 0)
+                    {
+                        _currentAction = UnitAction.Attacking;
+                        if (_animator != null)
+                            _animator.Play("\u5251\u58EB\u6345", 0, 0f);
+                        if (extended)
+                            _attackAnimBeats = data.attackAnimBeats;
+                    }
+                    _currentTarget.TakeDamage(data.attackPower);
+                    if (_currentTarget._isDead)
+                        _attackAnimBeats = 0;
+                }
             }
             else
                 _currentAction = UnitAction.Idle;
+
+            SyncAnimator();
         }
 
         protected bool ShouldAttackOnBeat(int beat)
@@ -123,6 +187,7 @@ namespace PPCorps
             if (!GridManager.Instance.IsInBounds(dest))
             {
                 _currentAction = UnitAction.Idle;
+                SyncAnimator();
                 return;
             }
 
@@ -131,9 +196,14 @@ namespace PPCorps
                 var blockers = GridManager.Instance.GetOccupants(dest);
                 if (blockers.Count > 0 && blockers[0].isEnemy != isEnemy)
                 {
+                    if (data.attackAnimBeats > 0)
+                        return;
                     _currentTarget = blockers[0];
                     _currentAction = UnitAction.Attacking;
+                    if (_animator != null)
+                        _animator.Play("\u5251\u58EB\u6345", 0, 0f);
                     _currentTarget.TakeDamage(data.attackPower);
+                    SyncAnimator();
                 }
                 return;
             }
@@ -153,6 +223,7 @@ namespace PPCorps
             _moveStartBeat = GameManager.Instance.Beat;
             _isMoving = true;
             _currentAction = UnitAction.Moving;
+            SyncAnimator();
         }
 
         public virtual void TakeDamage(int damage)
@@ -166,6 +237,7 @@ namespace PPCorps
         {
             _isDead = true;
             _currentAction = UnitAction.Dead;
+            SyncAnimator();
             for (int i = 0; i < OccupiedCols; i++)
                 GridManager.Instance.Leave(_gridPos + i, this);
 
@@ -196,6 +268,7 @@ namespace PPCorps
             {
                 if (unit == null || unit == this || unit._isDead) continue;
                 if (unit.isEnemy == isEnemy) continue;
+                if (data.attackAnimBeats > 0 && unit._isMoving) continue;
 
                 int dist = GridPosition.Distance(_gridPos, unit._gridPos);
                 if (dist < minDist)
@@ -206,6 +279,12 @@ namespace PPCorps
             }
 
             return nearest;
+        }
+
+        protected void SyncAnimator()
+        {
+            if (_animator == null) return;
+            _animator.SetInteger("Action", (int)_currentAction);
         }
 
         private void OnDestroy()

@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b540171adb2547148919d66567cc639e, type: 3}
-  m_Name: "\u5251\u58EBenemydata"
+  m_Name: "\u5251\u58EBenemy"
   m_EditorClassIdentifier: 
   unitName: "\u5251\u58EBenemy"
   prefab: {fileID: 6666266967036799093, guid: 77b6b7deea42c7640a27c77192c88693, type: 3}
   icon: {fileID: 0}
   unitType: 0
   maxHP: 600
-  attackPower: 80
+  attackPower: 50
   attackRange: 1
   moveSpeed: 1
-  deployCost: 3
+  deployCost: 1
   attackOnBeat1: 0
   attackOnBeat2: 0
   attackOnBeat3: 0
@@ -29,3 +29,4 @@ MonoBehaviour:
   attackOnBeat6: 0
   attackOnBeat7: 0
   attackOnBeat8: 0
+  attackAnimBeats: 5

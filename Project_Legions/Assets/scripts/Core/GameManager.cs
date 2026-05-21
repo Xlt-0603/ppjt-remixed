@@ -67,6 +67,15 @@ namespace PPCorps
             OnBeat?.Invoke(Bar, Beat);
 
             var unitsThisBeat = new List<UnitBase>(_allUnits);
+            unitsThisBeat.Sort((a, b) =>
+            {
+                if (a == null || b == null) return 0;
+                if (a.IsEnemy != b.IsEnemy)
+                    return a.IsEnemy.CompareTo(b.IsEnemy);
+                return a.IsEnemy
+                    ? a.GridPos.col.CompareTo(b.GridPos.col)
+                    : b.GridPos.col.CompareTo(a.GridPos.col);
+            });
             foreach (var unit in unitsThisBeat)
             {
                 if (unit != null) unit.OnBeat(Bar, Beat);

@@ -24,5 +24,8 @@ namespace PPCorps
         public bool attackOnBeat6;
         public bool attackOnBeat7;
         public bool attackOnBeat8;
+
+        [Header("动画持续节拍（0=用原有逻辑）")]
+        public int attackAnimBeats;
     }
 }
