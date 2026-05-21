@@ -26,13 +26,14 @@ namespace PPCorps.EditorTools
             var camObj = CreateGameObject("Main Camera", typeof(Camera), typeof(AudioListener));
             var cam = camObj.GetComponent<Camera>();
             cam.orthographic = true;
-            cam.orthographicSize = 3.5f;
+            cam.orthographicSize = 11.6667f;
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.55f, 0.75f, 1f); // 天空蓝
-            camObj.transform.position = new Vector3(0, -0.5f, -10);
+            camObj.transform.position = new Vector3(0, -1.6667f, -10);
             camObj.tag = "MainCamera";
             var camCtrl = camObj.AddComponent<VillageCameraController>();
-            camCtrl.SetBounds(-18f, 10f);
+            camCtrl.SetBounds(-60f, 33.3333f);
+            SetPrivateField(camCtrl, "_scrollAmount", 40f);
             camObj.AddComponent<Physics2DRaycaster>();
 
             // ==================== 2. Canvas ====================
@@ -145,7 +146,7 @@ namespace PPCorps.EditorTools
             // ==================== 9. 地面 ====================
             var groundObj = new GameObject("Ground");
             groundObj.transform.SetParent(mgrObj.transform);
-            groundObj.transform.position = new Vector3(0, -3.5f, 0.5f);
+            groundObj.transform.position = new Vector3(0, -11.6667f, 0.5f);
             var groundSR = groundObj.AddComponent<SpriteRenderer>();
             var groundSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Objects/Village/Ground.png");
             if (groundSprite != null)
@@ -154,7 +155,7 @@ namespace PPCorps.EditorTools
                 groundSR.color = new Color(0.3f, 0.55f, 0.2f);
                 groundSR.sortingOrder = -1;
             }
-            groundObj.transform.localScale = new Vector3(70, 1.5f, 1);
+            groundObj.transform.localScale = new Vector3(233.3333f, 5f, 1);
 
             // ==================== 10. 创建建筑 ====================
             string buildingsDir = "Assets/Objects/Village";
@@ -162,17 +163,17 @@ namespace PPCorps.EditorTools
 
             var buildingDefs = new[]
             {
-                new BuildingDef("战斗中心", BuildingType.CombatCenter, "战斗中心.png", new Vector3(-10.23f, -1.11f, 0),
+                new BuildingDef("战斗中心", BuildingType.CombatCenter, "战斗中心.png", new Vector3(-34.1f, -3.7f, 0),
                     "Panel_Combat", typeof(CombatPanelUI)),
-                new BuildingDef("食堂", BuildingType.Canteen, "食堂.png", new Vector3(-4.98f, -1.325f, 0),
+                new BuildingDef("食堂", BuildingType.Canteen, "食堂.png", new Vector3(-16.6f, -4.4167f, 0),
                     "Panel_Canteen", typeof(CanteenPanelUI)),
-                new BuildingDef("渔场", BuildingType.Fishing, "渔场.png", new Vector3(0f, -1.55f, 0),
+                new BuildingDef("渔场", BuildingType.Fishing, "渔场.png", new Vector3(0f, -5.1667f, 0),
                     "Panel_Fishing", typeof(FishingPanelUI)),
-                new BuildingDef("研究所", BuildingType.ResearchLab, "研究所.png", new Vector3(4.97f, -1.195f, 0),
+                new BuildingDef("研究所", BuildingType.ResearchLab, "研究所.png", new Vector3(16.5667f, -3.9833f, 0),
                     "Panel_Research", typeof(ResearchPanelUI)),
-                new BuildingDef("豆网", BuildingType.Shop, "豆网.png", new Vector3(8.58f, -1.93f, 0),
+                new BuildingDef("豆网", BuildingType.Shop, "豆网.png", new Vector3(28.6f, -6.4333f, 0),
                     "Panel_Shop", typeof(ShopPanelUI)),
-                new BuildingDef("村中心", BuildingType.VillageCenter, "村中心.png", new Vector3(-15.455f, -0.95f, 1f),
+                new BuildingDef("村中心", BuildingType.VillageCenter, "村中心.png", new Vector3(-51.5167f, -3.1667f, 1f),
                     null, null),
             };
 
@@ -515,16 +516,16 @@ namespace PPCorps.EditorTools
                         importer.spriteImportMode = SpriteImportMode.Single;
                         dirty = true;
                     }
-                    if (importer.spritePixelsPerUnit != 200f)
+                    if (importer.spritePixelsPerUnit != 60f)
                     {
-                        importer.spritePixelsPerUnit = 200f;
+                        importer.spritePixelsPerUnit = 60f;
                         dirty = true;
                     }
                     if (dirty)
                     {
                         importer.SaveAndReimport();
                         anyChanged = true;
-                        Debug.Log($"[VillageScene] 已转换: {path} (PPU=200)");
+                        Debug.Log($"[VillageScene] 已转换: {path} (PPU=60)");
                     }
                 }
             }

@@ -5,9 +5,9 @@ namespace PPCorps
     public class VillageCameraController : MonoBehaviour
     {
         [SerializeField] private float _dragSpeed = 1f;
-        [SerializeField] private float _minX = -30f;
-        [SerializeField] private float _maxX = 30f;
-        [SerializeField] private float _scrollAmount = 12f;
+        [SerializeField] private float _minX = -60f;
+        [SerializeField] private float _maxX = 33.3333f;
+        [SerializeField] private float _scrollAmount = 40f;
         [SerializeField] private float _smoothTime = 0.15f;
 
         private Camera _camera;
