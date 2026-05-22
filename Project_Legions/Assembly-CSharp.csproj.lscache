@@ -52,6 +52,7 @@ TemporaryDependencyNodeTargetIdentifier=netstandard2.1
 
 [sourceFiles]
 Assets/scripts/Core/
+ EnergyManager.cs
  GameManager.cs
  GridManager.cs
  MetronomeUI.cs
@@ -59,13 +60,15 @@ Assets/scripts/Data/
  GameEnums.cs
  GridPosition.cs
  UnitData.cs
-Assets/scripts/Units/
- Commander.cs
- EnemyBase.cs
- Tower.cs
- UnitBase.cs
- UnitHPBar.cs
- UnitVisual.cs
+Assets/scripts/
+ UI/EnergyUI.cs
+ Units/
+  Commander.cs
+  EnemyBase.cs
+  Tower.cs
+  UnitBase.cs
+  UnitHPBar.cs
+  UnitVisual.cs
 Assets/TextMesh Pro/Examples & Extras/Scripts/
  Benchmark01.cs
  Benchmark01_UGUI.cs
