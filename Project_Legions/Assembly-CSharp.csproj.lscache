@@ -52,7 +52,6 @@ TemporaryDependencyNodeTargetIdentifier=netstandard2.1
 
 [sourceFiles]
 Assets/scripts/Core/
- EnergyManager.cs
  GameManager.cs
  GridManager.cs
  MetronomeUI.cs
