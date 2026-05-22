@@ -332,9 +332,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 269618122109356129, guid: ba83c434f9af1764d908ea08c69ebd9e, type: 3}
+      propertyPath: data
+      value: 
+      objectReference: {fileID: 11400000, guid: f7c789e52eb19894486624114a40ae57, type: 2}
     - target: {fileID: 3476036860269826495, guid: ba83c434f9af1764d908ea08c69ebd9e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.72
+      value: -10.07
       objectReference: {fileID: 0}
     - target: {fileID: 3476036860269826495, guid: ba83c434f9af1764d908ea08c69ebd9e, type: 3}
       propertyPath: m_LocalPosition.y
@@ -558,7 +562,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5535972096392980554, guid: 0fde46ec0e46c4945bb4d0d1917f5ec3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.43
+      value: -7.36
       objectReference: {fileID: 0}
     - target: {fileID: 5535972096392980554, guid: 0fde46ec0e46c4945bb4d0d1917f5ec3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -594,6 +598,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5535972096392980554, guid: 0fde46ec0e46c4945bb4d0d1917f5ec3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8034262977390047745, guid: 0fde46ec0e46c4945bb4d0d1917f5ec3, type: 3}
+      propertyPath: isEnemy
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -643,6 +651,7 @@ MonoBehaviour:
   _beatOn: {r: 0.3, g: 1, b: 0.3, a: 1}
   _beatOff: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   _beatCurrent: {r: 0.1, g: 0.6, b: 1, a: 1}
+  _foldButtonSize: 30
 --- !u!114 &1765332281
 MonoBehaviour:
   m_ObjectHideFlags: 0
