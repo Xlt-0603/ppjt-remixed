@@ -11,24 +11,35 @@
 | `Assets/Objects/Village/渔场.png` | 建筑 Sprite | 1000×600px, PPU=60 |
 | `Assets/Objects/Village/BuildingData_Fishing.asset` | SO 配置 | 已由 VillageSceneSetup 生成 |
 
+用户提供 15 张鱼 PNG（在 `D:\照片\碰\鱼\`），需复制到 Unity 项目
+
 ---
 
 ## 二、需新建素材
 
-### 1. 鱼 Sprite（8 张）
+### 1. 鱼 Sprite（15 张 — 用户已提供，需复制导入）
 
-路径：`Assets/Objects/Village/Fishing/`
+路径（目标）：`Assets/Objects/Village/Fishing/`
 
-| 文件名 | 鱼名 | 稀有度 | 建议尺寸 |
-|--------|------|--------|---------|
-| `fish_carp.png` | 溪流鲫鱼 | 普通（蓝） | 64×32px |
-| `fish_rockbass.png` | 石斑鱼 | 普通（蓝） | 64×32px |
-| `fish_redbrow.png` | 赤眉鱼 | 稀有（紫） | 64×48px |
-| `fish_jellyfish.png` | 荧光水母 | 稀有（紫） | 64×48px |
-| `fish_fireloach.png` | 火焰泥鳅 | 稀有（紫） | 64×48px |
-| `fish_goldcarp.png` | 金鳞鲤 | 传说（金） | 64×64px |
-| `fish_shadowcatfish.png` | 暗影鲶 | 传说（金） | 64×64px |
-| `fish_leviathan.png` | 利维坦幼体 | 传说（金） | 96×64px |
+| 文件名 | 稀有度 | 尺寸 | 来源 |
+|--------|--------|------|------|
+| `磷虾.png` | 普通（蓝） | 200×100px | 用户提供 |
+| `河虾.png` | 普通（蓝） | 200×100px | 用户提供 |
+| `鲱鱼.png` | 普通（蓝） | 200×100px | 用户提供 |
+| `泥鳅.png` | 普通（蓝） | 200×100px | 用户提供 |
+| `虹色飞鱼.png` | 普通（蓝） | 200×100px | 用户提供 |
+| `河蟾.png` | 普通（蓝） | 200×100px | 用户提供 |
+| `赤眉鱼.png` | 稀有（紫） | 200×100px | 用户提供 |
+| `小荧光水母.png` | 稀有（紫） | 200×100px | 用户提供 |
+| `马克土司.png` | 稀有（紫） | 200×100px | 用户提供 |
+| `月亮鱼.png` | 稀有（紫） | 200×100px | 用户提供 |
+| `火焰泥鳅.png` | 稀有（紫） | 200×100px | 用户提供 |
+| `皇冠直升机.png` | 传说（金） | 200×100px | 用户提供 |
+| `大荧光水母.png` | 传说（金） | 200×100px | 用户提供 |
+| `暗影鲶.png` | 传说（金） | 200×100px | 用户提供 |
+| `利维坦幼体.png` | 传说（金） | 200×100px | 用户提供 |
+
+> 导入设置：Sprite(2D and UI), PPU=60（与建筑一致）, 无压缩, 无 Read/Write
 
 ### 2. UI 图标（9 张）
 
@@ -72,20 +83,27 @@
 | `FishingCollectionUI.cs` | 图鉴面板逻辑（网格填充、未解锁显示） |
 | `FishResultPopup.cs` | 鱼获弹窗逻辑（展示 + 自动关闭） |
 
-### 5. 数据资产（10 个）
+### 5. 数据资产（17 个）
 
 路径：`Assets/Objects/Village/Fishing/`
 
 | 文件 | 类型 |
 |------|------|
-| `FishData_Carp.asset` | 溪流鲫鱼配置 |
-| `FishData_RockBass.asset` | 石斑鱼配置 |
-| `FishData_RedBrow.asset` | 赤眉鱼配置 |
-| `FishData_Jellyfish.asset` | 荧光水母配置 |
-| `FishData_FireLoach.asset` | 火焰泥鳅配置 |
-| `FishData_GoldCarp.asset` | 金鳞鲤配置 |
-| `FishData_ShadowCatfish.asset` | 暗影鲶配置 |
-| `FishData_Leviathan.asset` | 利维坦幼体配置 |
+| `FishData_磷虾.asset` | 磷虾配置 |
+| `FishData_河虾.asset` | 河虾配置 |
+| `FishData_鲱鱼.asset` | 鲱鱼配置 |
+| `FishData_泥鳅.asset` | 泥鳅配置 |
+| `FishData_虹色飞鱼.asset` | 虹色飞鱼配置 |
+| `FishData_河蟾.asset` | 河蟾配置 |
+| `FishData_赤眉鱼.asset` | 赤眉鱼配置 |
+| `FishData_小荧光水母.asset` | 小荧光水母配置 |
+| `FishData_马克土司.asset` | 马克土司配置 |
+| `FishData_月亮鱼.asset` | 月亮鱼配置 |
+| `FishData_火焰泥鳅.asset` | 火焰泥鳅配置 |
+| `FishData_皇冠直升机.asset` | 皇冠直升机配置 |
+| `FishData_大荧光水母.asset` | 大荧光水母配置 |
+| `FishData_暗影鲶.asset` | 暗影鲶配置 |
+| `FishData_利维坦幼体.asset` | 利维坦幼体配置 |
 | `FishRodConfig.asset` | 鱼竿等级表 |
 | `FishBoxConfig.asset` | 鱼箱等级表 |
 
@@ -97,8 +115,8 @@
 Assets/
 ├── Objects/Village/
 │   ├── Fishing/                     ← 新建
-│   │   ├── fish_*.png              (×8, Sprite)
-│   │   ├── FishData_*.asset        (×8, SO)
+│   │   ├── 各鱼名.png              (×15, Sprite, 用户提供)
+│   │   ├── FishData_*.asset        (×15, SO)
 │   │   ├── FishRodConfig.asset     (SO)
 │   │   └── FishBoxConfig.asset     (SO)
 │   ├── 渔场.png                     ✓已有
@@ -138,8 +156,8 @@ Assets/
 
 | 类别 | 已有 | 需新建 |
 |------|:----:|:------:|
-| Sprite（建筑 + 鱼 + UI） | 1 | 17 |
+| Sprite（建筑 + 鱼 + UI） | 1+15=16 | 9（UI 图标） |
 | UI 预制体 | 0 | 3 |
 | 脚本 | 0 | 9 |
-| 数据 asset | 1 | 10 |
-| **合计** | **2** | **39 个文件** |
+| 数据 asset | 1 | 17（15 鱼 + 竿 + 箱） |
+| **合计** | **17 已有** | **38 个需创建** |
