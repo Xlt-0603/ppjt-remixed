@@ -6,9 +6,11 @@ namespace PPCorps
     public class Commander : MonoBehaviour
     {
         [SerializeField] private int _maxHP = 20;
+        [SerializeField] private bool _isEnemy;
 
         public int maxHP => _maxHP;
         public int currentHP { get; private set; }
+        public bool IsEnemy => _isEnemy;
 
         public event Action<int, int> OnHPChanged;
         public event Action OnDeath;

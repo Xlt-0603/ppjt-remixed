@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace PPCorps
@@ -24,6 +25,8 @@ namespace PPCorps
 
         public bool IsEnemy => isEnemy;
         public bool IsDead => _isDead;
+
+        public event Action<UnitBase> OnUnitDeath;
         public int CurrentHP => _currentHP;
         public int MaxHP => data != null ? data.maxHP : 1;
         public UnitAction CurrentAction => _currentAction;
@@ -243,6 +246,8 @@ namespace PPCorps
 
             if (GameManager.Instance != null)
                 GameManager.Instance.UnregisterUnit(this);
+
+            OnUnitDeath?.Invoke(this);
 
             Destroy(gameObject);
         }
