@@ -15,6 +15,10 @@ namespace PPCorps
         [Header("引用")]
         [SerializeField] private Commander _commander;
 
+        [Header("胜负判定 - 双方塔")]
+        [SerializeField] private UnitBase _playerTower;
+        [SerializeField] private UnitBase _enemyTower;
+
         public int Bar { get; private set; }
         public int Beat { get; private set; }
         public float BPM
@@ -30,6 +34,8 @@ namespace PPCorps
 
         private List<UnitBase> _allUnits = new List<UnitBase>();
         private float _beatTimer;
+        private bool _playerTowerDead;
+        private bool _enemyTowerDead;
 
         private void Awake()
         {
@@ -39,6 +45,17 @@ namespace PPCorps
             IsPaused = _startPaused;
             SetState(GameState.Deploy);
         }
+
+        private void Start()
+        {
+            if (_playerTower != null)
+                _playerTower.OnUnitDeath += OnPlayerTowerDeath;
+            if (_enemyTower != null)
+                _enemyTower.OnUnitDeath += OnEnemyTowerDeath;
+        }
+
+        private void OnPlayerTowerDeath(UnitBase _) => _playerTowerDead = true;
+        private void OnEnemyTowerDeath(UnitBase _) => _enemyTowerDead = true;
 
         private void Update()
         {
@@ -86,10 +103,10 @@ namespace PPCorps
 
         private void CheckGameOver()
         {
-            if (_commander == null) return;
-
-            if (_commander.currentHP <= 0)
+            if (_playerTowerDead)
                 SetState(GameState.Lose);
+            else if (_enemyTowerDead)
+                SetState(GameState.Win);
         }
 
         public void SetState(GameState newState)
@@ -112,6 +129,14 @@ namespace PPCorps
         public List<UnitBase> GetAllUnits() => _allUnits;
 
         public Commander GetCommander() => _commander;
+
+        private void OnDestroy()
+        {
+            if (_playerTower != null)
+                _playerTower.OnUnitDeath -= OnPlayerTowerDeath;
+            if (_enemyTower != null)
+                _enemyTower.OnUnitDeath -= OnEnemyTowerDeath;
+        }
 
         [ContextMenu("步进一拍")]
         public void StepBeat()
