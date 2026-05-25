@@ -57,7 +57,40 @@
 | `icon_rarity_gold.png` | 16×16 | 传说稀有度标记 |
 | `icon_fish_unknown.png` | 64×64 | 图鉴未解锁占位图 |
 
-### 3. UI 预制体（3 个）
+### 3. 渔场面板 UI 素材（12 张）
+
+路径：`Assets/UI/Village/Fishing/`
+
+#### 主面板（FishingPanel）
+| 文件名 | 建议尺寸 | 说明 |
+|--------|---------|------|
+| `bg_fishing.png` | 900×500 | 主面板背景（深蓝水域风格） |
+| `slot_equip.png` | 32×64 | 装备槽背景（放鱼竿/鱼饵/鱼箱图标） |
+| `progress_bar_bg.png` | 400×20 | 钓鱼进度条背景 |
+| `progress_bar_fill.png` | 4×20 | 进度条填充（蓝色） |
+| `btn_start_fish.png` | 180×60 | 开始钓鱼按钮 |
+| `btn_bait_switch.png` | 120×40 | 切换鱼饵按钮 |
+
+#### 图鉴面板（CollectionPanel）
+| 文件名 | 建议尺寸 | 说明 |
+|--------|---------|------|
+| `bg_collection.png` | 900×500 | 图鉴背景（木质/纸质感） |
+| `slot_fish_grid.png` | 90×90 | 鱼格背景（九宫格，放鱼 Sprite） |
+| `frame_common.png` | 90×90 | 普通鱼边框（蓝色） |
+| `frame_rare.png` | 90×90 | 稀有鱼边框（紫色） |
+| `frame_legendary.png` | 90×90 | 传说鱼边框（金色） |
+
+#### 钓到通知弹窗（FishResultPopup）
+| 文件名 | 建议尺寸 | 说明 |
+|--------|---------|------|
+| `bg_popup.png` | 300×200 | 弹窗背景 |
+| `badge_new.png` | 48×24 | "NEW!" 标识 |
+
+> 风格建议：像素风，与建筑保持一致。主色调深蓝/木色/水色系。
+> 以上均可用 UGUI 纯色代替，你只需提供 bg_fishing 和 bg_collection 两张背景图即可运行。
+> 其余按钮/进度条/边框可以先用 UGUI 白色 Image + 代码着色占位。
+
+### 4. UI 预制体（3 个）
 
 路径：`Assets/Prefabs/Village/UI/`
 
@@ -123,15 +156,13 @@ Assets/
 │   └── BuildingData_Fishing.asset   ✓已有
 │
 ├── UI/Village/Fishing/              ← 新建
-│   ├── icon_fishcoin.png
-│   ├── icon_rod.png
-│   ├── icon_bait_normal.png
-│   ├── icon_bait_advanced.png
-│   ├── icon_fishbox.png
-│   ├── icon_rarity_blue.png
-│   ├── icon_rarity_purple.png
-│   ├── icon_rarity_gold.png
-│   └── icon_fish_unknown.png
+│   ├── icon_*.png                   (×9, 图标)
+│   ├── bg_*.png                     (×3, 面板背景)
+│   ├── slot_*.png                   (×2, 装备槽/鱼格)
+│   ├── progress_*.png               (×2, 进度条)
+│   ├── btn_*.png                    (×2, 按钮)
+│   ├── frame_*.png                  (×3, 稀有度边框)
+│   └── badge_new.png
 │
 ├── Prefabs/Village/UI/
 │   ├── FishingPanel.prefab          ← 新建
@@ -156,8 +187,8 @@ Assets/
 
 | 类别 | 已有 | 需新建 |
 |------|:----:|:------:|
-| Sprite（建筑 + 鱼 + UI） | 1+15=16 | 9（UI 图标） |
+| Sprite（建筑 + 鱼 + UI 图标 + UI 面板） | 1+15=16 | 9+12=21（9 图标 + 12 面板素材） |
 | UI 预制体 | 0 | 3 |
 | 脚本 | 0 | 9 |
 | 数据 asset | 1 | 17（15 鱼 + 竿 + 箱） |
-| **合计** | **17 已有** | **38 个需创建** |
+| **合计** | **17 已有** | **50 个需创建** |
