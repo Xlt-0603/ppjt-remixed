@@ -64,7 +64,6 @@ namespace PPCorps
 
             if (_spriteRenderer != null)
             {
-                _spriteRenderer.flipX = _unit.IsEnemy;
                 if (_spriteRenderer.sprite == null && _defaultSprite != null)
                     _spriteRenderer.sprite = _defaultSprite;
             }
