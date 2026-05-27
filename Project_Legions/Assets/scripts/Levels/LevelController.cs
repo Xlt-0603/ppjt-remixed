@@ -7,12 +7,22 @@ namespace PPCorps
         [SerializeField] private LevelData _levelData;
         [SerializeField] private float _spawnY = -0.5f;
 
+        private int _validEntryCount;
+        private int _spawnedCount;
+        private int _aliveSpawnedCount;
+
         private void Start()
         {
             if (_levelData == null)
             {
                 Debug.LogWarning("LevelController: 未指定关卡数据");
                 return;
+            }
+
+            foreach (var entry in _levelData.entries)
+            {
+                if (entry.enemyData != null && entry.enemyData.prefab != null)
+                    _validEntryCount++;
             }
 
             if (_levelData.bpmOverride > 0)
@@ -47,7 +57,27 @@ namespace PPCorps
             {
                 SetField(unit, "isEnemy", true);
                 SetField(unit, "data", entry.enemyData);
+
+                _spawnedCount++;
+                _aliveSpawnedCount++;
+                unit.OnUnitDeath += OnSpawnedUnitDeath;
             }
+        }
+
+        private void OnSpawnedUnitDeath(UnitBase unit)
+        {
+            unit.OnUnitDeath -= OnSpawnedUnitDeath;
+            _aliveSpawnedCount--;
+            TryWinByClear();
+        }
+
+        private void TryWinByClear()
+        {
+            if (!_levelData.clearAllEnemiesToWin) return;
+            if (_spawnedCount < _validEntryCount) return;
+            if (_aliveSpawnedCount > 0) return;
+
+            GameManager.Instance.ForceWin();
         }
 
         private static void SetField(object obj, string fieldName, object value)

@@ -11,6 +11,9 @@ namespace PPCorps
         [Header("覆盖全局 BPM（0=使用默认）")]
         public float bpmOverride;
 
+        [Header("胜利条件")]
+        public bool clearAllEnemiesToWin;
+
         [Header("出场表")]
         public SpawnEntry[] entries;
     }

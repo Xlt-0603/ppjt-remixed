@@ -102,8 +102,20 @@ namespace PPCorps
             CheckGameOver();
         }
 
+        private bool _forceWin;
+
+        public void ForceWin()
+        {
+            _forceWin = true;
+        }
+
         private void CheckGameOver()
         {
+            if (_forceWin)
+            {
+                SetState(GameState.Win);
+                return;
+            }
             if (_playerTowerDead)
                 SetState(GameState.Lose);
             else if (_enemyTowerDead)

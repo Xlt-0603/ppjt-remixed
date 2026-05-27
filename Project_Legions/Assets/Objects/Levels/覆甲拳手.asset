@@ -16,6 +16,7 @@ MonoBehaviour:
   prefab: {fileID: 8202898158105735148, guid: 4a83a1d6dc2c3794593abaa4eefd4b20, type: 3}
   icon: {fileID: 21300000, guid: dea2acd7e019f5d4ca57d7f2a1b1997b, type: 3}
   unitType: 0
+  unitClass: 0
   maxHP: 1000
   attackPower: 10
   attackRange: 1
@@ -29,4 +30,5 @@ MonoBehaviour:
   attackOnBeat6: 0
   attackOnBeat7: 0
   attackOnBeat8: 0
-  attackAnimBeats: 8
+  attackAnimBeats: 5
+  preferFarthestTarget: 0

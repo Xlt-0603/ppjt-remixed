@@ -10,6 +10,7 @@ namespace PPCorps
         private SerializedProperty _entries;
         private SerializedProperty _bpmOverride;
         private SerializedProperty _levelName;
+        private SerializedProperty _clearAllEnemies;
         private GUIStyle _headerStyle;
         private GUIStyle _cellStyle;
         private GUIStyle _enemyLabelStyle;
@@ -18,6 +19,7 @@ namespace PPCorps
         {
             _levelName = serializedObject.FindProperty("levelName");
             _bpmOverride = serializedObject.FindProperty("bpmOverride");
+            _clearAllEnemies = serializedObject.FindProperty("clearAllEnemiesToWin");
             _entries = serializedObject.FindProperty("entries");
         }
 
@@ -57,6 +59,7 @@ namespace PPCorps
         {
             EditorGUILayout.PropertyField(_levelName, new GUIContent("关卡名称"));
             EditorGUILayout.PropertyField(_bpmOverride, new GUIContent("BPM 覆盖（0=默认）"));
+            EditorGUILayout.PropertyField(_clearAllEnemies, new GUIContent("清怪胜利（默认推塔）"));
 
             var totalEnemies = 0;
             for (int i = 0; i < _entries.arraySize; i++)

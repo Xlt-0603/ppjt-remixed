@@ -14,8 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelName: Level_1
   bpmOverride: 60
+  clearAllEnemiesToWin: 1
   entries:
   - enemyData: {fileID: 11400000, guid: 125da0ec165e6714c8275b78a19cd3d9, type: 2}
-    bar: 3
+    bar: 5
     beat: 1
-    col: 10
+    col: 14
+  - enemyData: {fileID: 11400000, guid: 125da0ec165e6714c8275b78a19cd3d9, type: 2}
+    bar: 6
+    beat: 1
+    col: 13
