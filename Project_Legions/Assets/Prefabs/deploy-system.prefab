@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7593728065767437525
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7277123432504939886}
+  - component: {fileID: 5044810469971086765}
+  - component: {fileID: 6733103584637943660}
+  m_Layer: 0
+  m_Name: deploy-system
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7277123432504939886
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7593728065767437525}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.7497447, y: 0.09686248, z: 0.51654893}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5044810469971086765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7593728065767437525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8afb5686b4938364e8a58a317fd8e41c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _energyPerBar: 1
+  _startEnergy: 3
+  _playerSpawnY: -0.5
+  _placeableColMin: 0
+--- !u!114 &6733103584637943660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7593728065767437525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c85c66367c6d504bbe007132495cd3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cards:
+  - unitData: {fileID: 0}
+    cardImage: {fileID: 0}
+  - unitData: {fileID: 11400000, guid: f7c789e52eb19894486624114a40ae57, type: 2}
+    cardImage: {fileID: 21300000, guid: 2598784385ad53d48a544efe06287e32, type: 3}
+  _panelX: 525
+  _panelY: 750
+  _panelWidth: 800
+  _panelHeight: 120
+  _cardWidth: 80
+  _cardHeight: 100
+  _cardGap: 10
+  _cardIconSize: 50
+  _cardBg: {r: 0.15, g: 0.15, b: 0.15, a: 0.9}
+  _cardBorderNormal: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _cardBorderAfford: {r: 0, g: 1, b: 0, a: 1}
+  _cardBorderDisabled: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+  _ghostValid: {r: 0, g: 1, b: 0, a: 0.6}
+  _ghostInvalid: {r: 1, g: 0, b: 0, a: 0.6}

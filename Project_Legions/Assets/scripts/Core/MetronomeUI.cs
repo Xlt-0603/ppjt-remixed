@@ -83,6 +83,12 @@ namespace PPCorps
             GUI.Label(new Rect(barCenterX - 120, barY + _beatSquareSize + 8, 240, 28),
                 $"小节 {gm.Bar} | BPM: {(int)gm.BPM}", _labelStyle);
 
+            if (DeploySystem.Instance != null)
+            {
+                GUI.Label(new Rect(barCenterX + 130, barY + _beatSquareSize + 8, 160, 28),
+                    $"费用 {DeploySystem.Instance.Energy}", _labelStyle);
+            }
+
             DrawPanelExpandButton(true);
         }
 
@@ -115,6 +121,12 @@ namespace PPCorps
             float barCenterX = startX + totalWidth / 2f;
             GUI.Label(new Rect(barCenterX - 120, y + _beatSquareSize + 6, 240, 36),
                 $"小节 {gm.Bar}", _labelStyle);
+
+            if (DeploySystem.Instance != null)
+            {
+                GUI.Label(new Rect(barCenterX + 130, y + _beatSquareSize + 6, 160, 36),
+                    $"费用 {DeploySystem.Instance.Energy}", _labelStyle);
+            }
         }
 
         private void DrawDebugPanel(GameManager gm)

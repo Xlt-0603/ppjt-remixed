@@ -71,3 +71,4 @@ Assets/
 ## 编码约定
 
 - **UI 一律使用 `OnGUI`**，不使用 `Canvas`/uGUI，除非明确指示"用 Canvas"。
+- **Singleton 统一管理**：`GameManager` 已设 `[DefaultExecutionOrder(-100)]`，其他脚本订阅事件必须用 `Start()`（而非 `OnEnable()`）访问 `GameManager.Instance`；如果发现新的 singleton 类，也要加 `[DefaultExecutionOrder(-100)]` 确保在别的脚本拿 Instance 前初始化。
