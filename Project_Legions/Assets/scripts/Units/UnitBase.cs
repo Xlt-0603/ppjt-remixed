@@ -83,8 +83,10 @@ namespace PPCorps
             if (_attackAnimBeats > 0)
                 _attackAnimBeats--;
 
-            _currentTarget = FindNearestEnemy();
-            bool inCombat = _currentTarget != null && InAttackRange(_currentTarget);
+            _currentTarget = data.preferFarthestTarget ? FindFarthestInRangeEnemy() : FindNearestEnemy();
+            bool inCombat = data.preferFarthestTarget
+                ? _currentTarget != null
+                : _currentTarget != null && InAttackRange(_currentTarget);
 
             if (data.attackAnimBeats > 0 && !inCombat)
                 _attackAnimBeats = 0;
@@ -284,6 +286,30 @@ namespace PPCorps
             }
 
             return nearest;
+        }
+
+        protected UnitBase FindFarthestInRangeEnemy()
+        {
+            UnitBase farthest = null;
+            int maxDist = -1;
+
+            var allUnits = GameManager.Instance.GetAllUnits();
+            foreach (var unit in allUnits)
+            {
+                if (unit == null || unit == this || unit._isDead) continue;
+                if (unit.isEnemy == isEnemy) continue;
+                if (data.attackAnimBeats > 0 && unit._isMoving) continue;
+                if (!InAttackRange(unit)) continue;
+
+                int dist = GridPosition.Distance(_gridPos, unit._gridPos);
+                if (dist > maxDist)
+                {
+                    maxDist = dist;
+                    farthest = unit;
+                }
+            }
+
+            return farthest;
         }
 
         protected void SyncAnimator()

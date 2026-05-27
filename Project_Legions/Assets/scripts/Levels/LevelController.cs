@@ -45,19 +45,25 @@ namespace PPCorps
             UnitBase unit = go.GetComponent<UnitBase>();
             if (unit != null)
             {
-                System.Reflection.FieldInfo field = null;
-                var type = unit.GetType();
-                while (type != null && field == null)
-                {
-                    field = type.GetField("isEnemy",
-                        System.Reflection.BindingFlags.Instance |
-                        System.Reflection.BindingFlags.NonPublic |
-                        System.Reflection.BindingFlags.Public);
-                    type = type.BaseType;
-                }
-                if (field != null)
-                    field.SetValue(unit, true);
+                SetField(unit, "isEnemy", true);
+                SetField(unit, "data", entry.enemyData);
             }
+        }
+
+        private static void SetField(object obj, string fieldName, object value)
+        {
+            var type = obj.GetType();
+            System.Reflection.FieldInfo field = null;
+            while (type != null && field == null)
+            {
+                field = type.GetField(fieldName,
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Public);
+                type = type.BaseType;
+            }
+            if (field != null)
+                field.SetValue(obj, value);
         }
 
         private void OnDestroy()

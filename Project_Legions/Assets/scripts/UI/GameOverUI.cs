@@ -15,6 +15,9 @@ namespace PPCorps
         public float darkAlpha = 0.7f;
         public float holdBeforeReturn = 1f;
 
+        [Header("结束后行为")]
+        public bool returnToMatchScene = true;
+
         private enum AnimState { Idle, FadeIn, SlideIn, Show }
 
         private AnimState _state = AnimState.Idle;
@@ -95,7 +98,10 @@ namespace PPCorps
             }
 
             if (_canReturn && Input.anyKeyDown)
-                SceneManager.LoadScene("MatchScene");
+            {
+                if (returnToMatchScene)
+                    SceneManager.LoadScene("MatchScene");
+            }
         }
 
         private void OnGUI()

@@ -9,6 +9,7 @@ namespace PPCorps
         public GameObject prefab;
         public Sprite icon;
         public UnitType unitType;
+        public UnitClass unitClass;
         public int maxHP = 10;
         public int attackPower = 2;
         public int attackRange = 1;
@@ -27,5 +28,9 @@ namespace PPCorps
 
         [Header("动画持续节拍（0=用原有逻辑）")]
         public int attackAnimBeats;
+
+        [Header("抛投")]
+        [Tooltip("勾选后优先攻击攻击范围内最远的敌人，而非最近的")]
+        public bool preferFarthestTarget;
     }
 }

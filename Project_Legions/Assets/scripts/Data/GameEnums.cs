@@ -14,6 +14,16 @@ namespace PPCorps
         Ranged
     }
 
+    public enum UnitClass
+    {
+        None,
+        射手,
+        战士,
+        先锋,
+        守卫,
+        斥候
+    }
+
     public enum UnitAction
     {
         Idle,

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4904315502762042711}
   - component: {fileID: 3421386957423519775}
   m_Layer: 0
-  m_Name: fillbar
+  m_Name: enegybar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

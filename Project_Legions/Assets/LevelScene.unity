@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 778970056}
   - component: {fileID: 778970055}
   m_Layer: 0
-  m_Name: GameUI
+  m_Name: GameOverUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -295,6 +295,7 @@ MonoBehaviour:
   slideDuration: 0.6
   darkAlpha: 0.7
   holdBeforeReturn: 1
+  returnToMatchScene: 0
 --- !u!4 &778970056
 Transform:
   m_ObjectHideFlags: 0
@@ -384,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6549c1f19726e63459474c84d44ac8e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelData: {fileID: 0}
+  _levelData: {fileID: 11400000, guid: 2067d094725085c448588080bd4b4230, type: 2}
   _spawnY: -0.5
 --- !u!4 &1243619303
 Transform:
