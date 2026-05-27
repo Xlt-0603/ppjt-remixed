@@ -73,13 +73,13 @@ namespace PPCorps
         private void UpdateDrag()
         {
             Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorld.z = 0;
+            mouseWorld.z = -3;
 
             int col = GridManager.Instance.WorldToGrid(mouseWorld).col;
             _dragGridPos = new GridPosition(col);
 
             float x = GridManager.Instance.GridToWorldX(_dragGridPos);
-            _ghost.transform.position = new Vector3(x, DeploySystem.Instance.PlayerSpawnY, 0);
+            _ghost.transform.position = new Vector3(x, DeploySystem.Instance.PlayerSpawnY, -3);
 
             bool valid = DeploySystem.Instance.CanPlaceUnit(_dragData, _dragGridPos);
             _ghostRenderer.color = valid ? _ghostValid : _ghostInvalid;
@@ -90,15 +90,19 @@ namespace PPCorps
             if (!_isDragging) return;
 
             if (!cancelled && DeploySystem.Instance.CanPlaceUnit(_dragData, _dragGridPos))
-                DeploySystem.Instance.PlaceUnit(_dragData, _dragGridPos);
-
-            if (_ghost != null)
-                Destroy(_ghost);
+            {
+                DeploySystem.Instance.QueueDeploy(_dragData, _dragGridPos, _ghost);
+                _ghost = null;
+                _ghostRenderer = null;
+            }
+            else
+            {
+                if (_ghost != null)
+                    Destroy(_ghost);
+            }
 
             _isDragging = false;
             _dragData = null;
-            _ghost = null;
-            _ghostRenderer = null;
         }
 
         private void OnGUI()

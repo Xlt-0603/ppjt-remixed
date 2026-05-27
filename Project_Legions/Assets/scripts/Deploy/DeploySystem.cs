@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -16,6 +17,15 @@ namespace PPCorps
         [SerializeField] private float _playerSpawnY = -0.5f;
         [SerializeField] private int _placeableColMin = 0;
 
+        private class PendingDeploy
+        {
+            public GridPosition gridPos;
+            public UnitData data;
+            public GameObject ghost;
+        }
+
+        private List<PendingDeploy> _pendingDeploys = new List<PendingDeploy>();
+
         public int Energy { get; private set; }
         public float PlayerSpawnY => _playerSpawnY;
 
@@ -28,19 +38,95 @@ namespace PPCorps
         private void Start()
         {
             GameManager.Instance.OnBeat += OnGameBeat;
+            GameManager.Instance.OnStateChanged += OnStateChanged;
         }
 
         private void OnDestroy()
         {
             if (GameManager.Instance != null)
+            {
                 GameManager.Instance.OnBeat -= OnGameBeat;
+                GameManager.Instance.OnStateChanged -= OnStateChanged;
+            }
+        }
+
+        private void OnStateChanged(GameState state)
+        {
+            if (state == GameState.Battle)
+                ExecutePendingDeploys();
+            else if (state == GameState.Win || state == GameState.Lose)
+                ClearPendingDeploys();
         }
 
         private void OnGameBeat(int bar, int beat)
         {
             if (GameManager.Instance.State != GameState.Battle) return;
+
             if (beat == 1)
+            {
+                ExecutePendingDeploys();
                 Energy += _energyPerBar;
+            }
+        }
+
+        public void QueueDeploy(UnitData data, GridPosition pos, GameObject ghost)
+        {
+            if (!CanPlaceUnit(data, pos)) return;
+
+            Energy -= data.deployCost;
+            GridManager.Instance.Reserve(pos);
+
+            _pendingDeploys.Add(new PendingDeploy
+            {
+                gridPos = pos,
+                data = data,
+                ghost = ghost
+            });
+
+            SpriteRenderer sr = ghost.GetComponent<SpriteRenderer>();
+            if (sr != null)
+                sr.color = new Color(0.4f, 0.6f, 1f, 0.9f);
+        }
+
+        private void ExecutePendingDeploys()
+        {
+            foreach (var pending in _pendingDeploys)
+            {
+                GridManager.Instance.Unreserve(pending.gridPos);
+
+                float x = GridManager.Instance.GridToWorldX(pending.gridPos);
+                Vector3 worldPos = new Vector3(x, _playerSpawnY, 0);
+                GameObject go = Instantiate(pending.data.prefab, worldPos, Quaternion.identity);
+
+                UnitBase unit = go.GetComponent<UnitBase>();
+                if (unit != null)
+                {
+                    SetField(unit, "isEnemy", false);
+                    SetField(unit, "data", pending.data);
+                    SetField(unit, "_gridPos", pending.gridPos);
+                    unit.GridInitialized = true;
+
+                    for (int i = 0; i < unit.OccupiedCols; i++)
+                        GridManager.Instance.Occupy(pending.gridPos + i, unit);
+
+                    GameManager.Instance.RegisterUnit(unit);
+                }
+
+                if (pending.ghost != null)
+                    Destroy(pending.ghost);
+            }
+            _pendingDeploys.Clear();
+        }
+
+        private void ClearPendingDeploys()
+        {
+            foreach (var pending in _pendingDeploys)
+            {
+                GridManager.Instance.Unreserve(pending.gridPos);
+                if (pending.ghost != null)
+                    Destroy(pending.ghost);
+            }
+            _pendingDeploys.Clear();
         }
 
         public int GetMaxDeployCol()
@@ -87,26 +173,9 @@ namespace PPCorps
             if (GameManager.Instance.State != GameState.Deploy && GameManager.Instance.State != GameState.Battle) return false;
             if (pos.col < _placeableColMin || pos.col > GetMaxDeployCol()) return false;
             if (!GridManager.Instance.IsInBounds(pos)) return false;
+            if (GridManager.Instance.IsReserved(pos)) return false;
             if (GridManager.Instance.GetOccupants(pos).Count > 0) return false;
             return true;
-        }
-
-        public void PlaceUnit(UnitData data, GridPosition pos)
-        {
-            if (!CanPlaceUnit(data, pos)) return;
-
-            Energy -= data.deployCost;
-
-            float x = GridManager.Instance.GridToWorldX(pos);
-            Vector3 worldPos = new Vector3(x, _playerSpawnY, 0);
-            GameObject go = Instantiate(data.prefab, worldPos, Quaternion.identity);
-
-            UnitBase unit = go.GetComponent<UnitBase>();
-            if (unit != null)
-            {
-                SetField(unit, "isEnemy", false);
-                SetField(unit, "data", data);
-            }
         }
 
         private static void SetField(object obj, string fieldName, object value)

@@ -25,6 +25,7 @@ namespace PPCorps
 
         public bool IsEnemy => isEnemy;
         public bool IsDead => _isDead;
+        public bool GridInitialized { get; set; }
 
         public event Action<UnitBase> OnUnitDeath;
         public int CurrentHP => _currentHP;
@@ -55,9 +56,12 @@ namespace PPCorps
             if (_animator == null)
                 _animator = GetComponent<Animator>();
 
-            _gridPos = GridManager.Instance.WorldToGrid(transform.position);
-            for (int i = 0; i < OccupiedCols; i++)
-                GridManager.Instance.Occupy(_gridPos + i, this);
+            if (!GridInitialized)
+            {
+                _gridPos = GridManager.Instance.WorldToGrid(transform.position);
+                for (int i = 0; i < OccupiedCols; i++)
+                    GridManager.Instance.Occupy(_gridPos + i, this);
+            }
             SyncAnimator();
         }
 

@@ -4,7 +4,7 @@ namespace PPCorps
 {
     public class Tower : UnitBase
     {
-        public override int OccupiedCols => 1;
+        public override int OccupiedCols => 0;
 
         public override void OnBeat(int bar, int beat)
         {

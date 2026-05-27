@@ -13,6 +13,7 @@ namespace PPCorps
         [SerializeField] private int _cols = 24;
 
         private Dictionary<int, List<UnitBase>> _occupants = new Dictionary<int, List<UnitBase>>();
+        private HashSet<int> _reservedCells = new HashSet<int>();
 
         private void Awake() => Instance = this;
 
@@ -54,6 +55,12 @@ namespace PPCorps
                 return _occupants[pos.col];
             return new List<UnitBase>();
         }
+
+        public void Reserve(GridPosition pos) => _reservedCells.Add(pos.col);
+
+        public void Unreserve(GridPosition pos) => _reservedCells.Remove(pos.col);
+
+        public bool IsReserved(GridPosition pos) => _reservedCells.Contains(pos.col);
 
         public bool CanOccupy(GridPosition pos, UnitBase unit)
         {
