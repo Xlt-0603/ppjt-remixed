@@ -10,12 +10,16 @@ namespace PPCorps
         public static DeploySystem Instance { get; private set; }
 
         [Header("费用")]
-        [SerializeField] private int _energyPerBar = 1;
         [SerializeField] private int _startEnergy = 3;
+
+        [Header("回费配置")]
+        [SerializeField] private int _barsPerRegen = 15;
 
         [Header("部署范围")]
         [SerializeField] private float _playerSpawnY = -0.5f;
         [SerializeField] private int _placeableColMin = 0;
+
+        private static readonly int[] RegenTargets = { 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6 };
 
         private class PendingDeploy
         {
@@ -25,6 +29,8 @@ namespace PPCorps
         }
 
         private List<PendingDeploy> _pendingDeploys = new List<PendingDeploy>();
+        private int _regenStep;
+        private int _barsSinceLastRegen;
 
         public int Energy { get; private set; }
         public float PlayerSpawnY => _playerSpawnY;
@@ -65,7 +71,15 @@ namespace PPCorps
             if (beat == 1)
             {
                 ExecutePendingDeploys();
-                Energy += _energyPerBar;
+
+                _barsSinceLastRegen++;
+                if (_barsSinceLastRegen >= _barsPerRegen)
+                {
+                    _barsSinceLastRegen = 0;
+                    int target = _regenStep < RegenTargets.Length ? RegenTargets[_regenStep] : 6;
+                    Energy = target;
+                    if (_regenStep < RegenTargets.Length) _regenStep++;
+                }
             }
         }
 
