@@ -34,6 +34,7 @@ namespace PPCorps
 
         public int Energy { get; private set; }
         public float PlayerSpawnY => _playerSpawnY;
+        public int GetPlaceableColMin() => _placeableColMin;
 
         private void Awake()
         {

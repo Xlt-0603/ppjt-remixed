@@ -282,7 +282,7 @@ namespace PPCorps
                 if (data.attackAnimBeats > 0 && unit._isMoving) continue;
 
                 int dist = GridPosition.Distance(_gridPos, unit._gridPos);
-                if (dist < minDist)
+                if (dist < minDist || (dist == minDist && nearest is Tower && !(unit is Tower)))
                 {
                     minDist = dist;
                     nearest = unit;
@@ -306,7 +306,7 @@ namespace PPCorps
                 if (!InAttackRange(unit)) continue;
 
                 int dist = GridPosition.Distance(_gridPos, unit._gridPos);
-                if (dist > maxDist)
+                if (dist > maxDist || (dist == maxDist && farthest is Tower && !(unit is Tower)))
                 {
                     maxDist = dist;
                     farthest = unit;
