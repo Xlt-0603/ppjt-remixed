@@ -16,11 +16,12 @@ MonoBehaviour:
   prefab: {fileID: 626642080787768485, guid: 0fde46ec0e46c4945bb4d0d1917f5ec3, type: 3}
   icon: {fileID: 0}
   unitType: 0
+  unitClass: 0
   maxHP: 250
   attackPower: 10
   attackRange: 1
   moveSpeed: 1
-  deployCost: 3
+  deployCost: 8
   attackOnBeat1: 0
   attackOnBeat2: 0
   attackOnBeat3: 0
@@ -30,3 +31,4 @@ MonoBehaviour:
   attackOnBeat7: 0
   attackOnBeat8: 0
   attackAnimBeats: 5
+  preferFarthestTarget: 0
