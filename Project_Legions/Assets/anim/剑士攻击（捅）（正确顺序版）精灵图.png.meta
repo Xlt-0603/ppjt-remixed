@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4d784cc38b937714f8c71dddbf3997f8
+guid: 311b21fa9cddb5044a53b665f5260352
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -149,43 +149,43 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u5251\u58EB\u653B\u51FB\uFF08\u6345\uFF09\u7CBE\u7075\u56FE_0"
+      name: "\u5251\u58EB\u653B\u51FB\uFF08\u6345\uFF09\uFF08\u6B63\u786E\u987A\u5E8F\u7248\uFF09\u7CBE\u7075\u56FE_0"
       rect:
         serializedVersion: 2
-        x: 65
-        y: 9
-        width: 84
-        height: 75
+        x: 60
+        y: 8
+        width: 73
+        height: 77
       alignment: 9
-      pivot: {x: 0.5, y: 0.6}
+      pivot: {x: 0.6, y: 0.62}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c78562f3fb079c4eae86807c8db71ce
-      internalID: 489998193
+      spriteID: 50ca6610f52443e4abad06f7c4b543fd
+      internalID: 203768000
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "\u5251\u58EB\u653B\u51FB\uFF08\u6345\uFF09\u7CBE\u7075\u56FE_1"
+      name: "\u5251\u58EB\u653B\u51FB\uFF08\u6345\uFF09\uFF08\u6B63\u786E\u987A\u5E8F\u7248\uFF09\u7CBE\u7075\u56FE_1"
       rect:
         serializedVersion: 2
-        x: 260
-        y: 8
-        width: 73
-        height: 77
+        x: 265
+        y: 9
+        width: 84
+        height: 75
       alignment: 9
-      pivot: {x: 0.5, y: 0.6}
+      pivot: {x: 0.5, y: 0.62}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb70f6c77fef8cc448cc5531c0c643ee
-      internalID: 180636019
+      spriteID: 1f1079e46035b8b4da803c9ce8a2f222
+      internalID: -2094426204
       vertices: []
       indices: 
       edges: []
@@ -201,8 +201,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      "\u5251\u58EB\u653B\u51FB\uFF08\u6345\uFF09\u7CBE\u7075\u56FE_0": 489998193
-      "\u5251\u58EB\u653B\u51FB\uFF08\u6345\uFF09\u7CBE\u7075\u56FE_1": 180636019
+      "\u5251\u58EB\u653B\u51FB\uFF08\u6345\uFF09\uFF08\u6B63\u786E\u987A\u5E8F\u7248\uFF09\u7CBE\u7075\u56FE_0": 203768000
+      "\u5251\u58EB\u653B\u51FB\uFF08\u6345\uFF09\uFF08\u6B63\u786E\u987A\u5E8F\u7248\uFF09\u7CBE\u7075\u56FE_1": -2094426204
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

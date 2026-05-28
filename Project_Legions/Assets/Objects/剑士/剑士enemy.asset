@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b540171adb2547148919d66567cc639e, type: 3}
   m_Name: "\u5251\u58EBenemy"
   m_EditorClassIdentifier: 
-  unitName: "\u5251\u58EBenemy"
-  prefab: {fileID: 6666266967036799093, guid: 77b6b7deea42c7640a27c77192c88693, type: 3}
+  unitName: 
+  prefab: {fileID: 5534889972005926264, guid: c59371fd70abc9947805b5c7dd6ae53a, type: 3}
   icon: {fileID: 0}
   unitType: 0
+  unitClass: 0
   maxHP: 100
   attackPower: 5
   attackRange: 1
@@ -30,3 +31,4 @@ MonoBehaviour:
   attackOnBeat7: 0
   attackOnBeat8: 0
   attackAnimBeats: 5
+  preferFarthestTarget: 0
