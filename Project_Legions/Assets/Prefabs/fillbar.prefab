@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4904315502762042711}
   - component: {fileID: 3421386957423519775}
   m_Layer: 0
-  m_Name: enegybar
+  m_Name: fillbar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 3924095885278788333}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3, y: -5.2, z: 0.5615232}
+  m_LocalPosition: {x: 0, y: -7.5, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cycleBars: 15
-  _width: 300
+  _width: 1250
   _height: 24
   _emptyColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   _fillColor: {r: 1, g: 0.84, b: 0, a: 1}

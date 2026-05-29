@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b540171adb2547148919d66567cc639e, type: 3}
-  m_Name: towerenemydata
+  m_Name: "\u950B\u536B\u6570\u636E"
   m_EditorClassIdentifier: 
-  unitName: tower_enemy
-  prefab: {fileID: 8580802089805671314, guid: de8dcab33b6c6574da16f84cf45b6e0d, type: 3}
+  unitName: 
+  prefab: {fileID: 4582027293516001835, guid: f3c0d144655720b41a91f4e18c78d566, type: 3}
   icon: {fileID: 0}
   unitType: 0
   unitClass: 0
-  maxHP: 200
-  attackPower: 80
-  attackRange: 5
-  moveSpeed: 0
-  deployCost: 3
+  maxHP: 400
+  attackPower: 20
+  attackRange: 1
+  moveSpeed: 1
+  deployCost: 1
   attackOnBeat1: 0
   attackOnBeat2: 0
   attackOnBeat3: 0
-  attackOnBeat4: 0
-  attackOnBeat5: 1
+  attackOnBeat4: 1
+  attackOnBeat5: 0
   attackOnBeat6: 0
   attackOnBeat7: 0
   attackOnBeat8: 0

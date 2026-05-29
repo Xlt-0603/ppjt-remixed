@@ -34,20 +34,100 @@ namespace PPCorps
 
         private bool _isDragging;
         private UnitData _dragData;
+        private Sprite _dragCardSprite;
         private GameObject _ghost;
         private SpriteRenderer _ghostRenderer;
         private GridPosition _dragGridPos;
+        private bool _isInFieldZone;
+        private int _dragCardIndex = -1;
 
         private void Update()
         {
             if (!_isDragging) return;
 
-            UpdateDrag();
+            Vector3 mousePos = Input.mousePosition;
+            float guiMouseX = mousePos.x;
+            float guiMouseY = Screen.height - mousePos.y;
+            bool inPanel = guiMouseX >= _panelX && guiMouseX <= _panelX + _panelWidth
+                        && guiMouseY >= _panelY && guiMouseY <= _panelY + _panelHeight;
+            bool inField = !inPanel;
+            if (inField != _isInFieldZone)
+            {
+                _isInFieldZone = inField;
+                UpdateGhostSprite();
+            }
+
+            if (_isInFieldZone)
+                UpdateFieldDrag();
+            else
+                UpdateCardDrag(mousePos);
 
             if (Input.GetMouseButtonUp(0))
                 EndDrag(false);
             else if (Input.GetMouseButtonDown(1))
                 EndDrag(true);
+        }
+
+        private void UpdateGhostSprite()
+        {
+            if (_ghostRenderer == null) return;
+            SpriteRenderer src = _dragData.prefab.GetComponentInChildren<SpriteRenderer>();
+            _ghostRenderer.sprite = src != null ? src.sprite : _dragData.icon;
+        }
+
+        private void UpdateFieldDrag()
+        {
+            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorld.z = -3;
+
+            int mouseCol = GridManager.Instance.WorldToGrid(mouseWorld).col;
+            _dragGridPos = FindNearestValidCol(mouseCol);
+
+            if (_dragGridPos.col >= 0)
+            {
+                float x = GridManager.Instance.GridToWorldX(_dragGridPos);
+                _ghost.transform.position = new Vector3(x, DeploySystem.Instance.PlayerSpawnY, -3);
+                _ghost.SetActive(true);
+
+                bool valid = DeploySystem.Instance.CanPlaceUnit(_dragData, _dragGridPos);
+                _ghostRenderer.color = valid ? _ghostValid : _ghostInvalid;
+            }
+            else
+            {
+                _ghost.SetActive(false);
+            }
+        }
+
+        private GridPosition FindNearestValidCol(int centerCol)
+        {
+            int minCol = DeploySystem.Instance.GetPlaceableColMin();
+            int maxCol = DeploySystem.Instance.GetMaxDeployCol();
+
+            for (int offset = 0; offset <= 12; offset++)
+            {
+                int left = centerCol - offset;
+                int right = centerCol + offset;
+
+                if (left >= minCol)
+                {
+                    GridPosition pos = new GridPosition(left);
+                    if (DeploySystem.Instance.CanPlaceUnit(_dragData, pos))
+                        return pos;
+                }
+                if (right != left && right <= maxCol)
+                {
+                    GridPosition pos = new GridPosition(right);
+                    if (DeploySystem.Instance.CanPlaceUnit(_dragData, pos))
+                        return pos;
+                }
+            }
+
+            return new GridPosition(-1);
+        }
+
+        private void UpdateCardDrag(Vector3 mousePos)
+        {
+            if (_ghost != null) _ghost.SetActive(false);
         }
 
         private void StartDrag(UnitData data)
@@ -58,38 +138,51 @@ namespace PPCorps
 
             _isDragging = true;
             _dragData = data;
+            _dragCardIndex = System.Array.FindIndex(_cards, e => e != null && e.unitData == data);
+
+            _dragCardSprite = null;
+            foreach (var entry in _cards)
+            {
+                if (entry != null && entry.unitData == data)
+                {
+                    _dragCardSprite = entry.cardImage;
+                    break;
+                }
+            }
+            if (_dragCardSprite == null)
+            {
+                if (data.icon != null)
+                    _dragCardSprite = data.icon;
+                else
+                {
+                    SpriteRenderer sr = data.prefab?.GetComponentInChildren<SpriteRenderer>();
+                    if (sr != null) _dragCardSprite = sr.sprite;
+                }
+            }
 
             _ghost = new GameObject("DeployGhost");
             _ghost.transform.SetParent(transform);
             _ghostRenderer = _ghost.AddComponent<SpriteRenderer>();
-
-            SpriteRenderer src = data.prefab.GetComponentInChildren<SpriteRenderer>();
-            _ghostRenderer.sprite = src != null ? src.sprite : data.icon;
             _ghostRenderer.sortingOrder = 32767;
 
-            UpdateDrag();
-        }
+            Vector3 startMouse = Input.mousePosition;
+            float sguiX = startMouse.x;
+            float sguiY = Screen.height - startMouse.y;
+            _isInFieldZone = !(sguiX >= _panelX && sguiX <= _panelX + _panelWidth
+                            && sguiY >= _panelY && sguiY <= _panelY + _panelHeight);
+            UpdateGhostSprite();
 
-        private void UpdateDrag()
-        {
-            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mouseWorld.z = -3;
-
-            int col = GridManager.Instance.WorldToGrid(mouseWorld).col;
-            _dragGridPos = new GridPosition(col);
-
-            float x = GridManager.Instance.GridToWorldX(_dragGridPos);
-            _ghost.transform.position = new Vector3(x, DeploySystem.Instance.PlayerSpawnY, -3);
-
-            bool valid = DeploySystem.Instance.CanPlaceUnit(_dragData, _dragGridPos);
-            _ghostRenderer.color = valid ? _ghostValid : _ghostInvalid;
+            if (_isInFieldZone)
+                UpdateFieldDrag();
+            else
+                UpdateCardDrag(Input.mousePosition);
         }
 
         private void EndDrag(bool cancelled)
         {
             if (!_isDragging) return;
 
-            if (!cancelled && DeploySystem.Instance.CanPlaceUnit(_dragData, _dragGridPos))
+            if (!cancelled && _isInFieldZone && _dragGridPos.col >= 0 && DeploySystem.Instance.CanPlaceUnit(_dragData, _dragGridPos))
             {
                 DeploySystem.Instance.QueueDeploy(_dragData, _dragGridPos, _ghost);
                 _ghost = null;
@@ -103,6 +196,9 @@ namespace PPCorps
 
             _isDragging = false;
             _dragData = null;
+            _dragCardIndex = -1;
+            _ghost = null;
+            _ghostRenderer = null;
         }
 
         private void OnGUI()
@@ -125,6 +221,15 @@ namespace PPCorps
 
             for (int i = 0; i < _cards.Length; i++)
             {
+                if (_isDragging && i == _dragCardIndex)
+                {
+                    Rect slotRect = new Rect(_panelX + offsetX + i * (_cardWidth + _cardGap), cardY, _cardWidth, _cardHeight);
+                    GUI.color = new Color(0.2f, 0.2f, 0.2f, 0.5f);
+                    GUI.DrawTexture(slotRect, Texture2D.whiteTexture);
+                    GUI.color = Color.white;
+                    continue;
+                }
+
                 DeployCardEntry entry = _cards[i];
                 if (entry == null || entry.unitData == null) continue;
 
@@ -132,7 +237,7 @@ namespace PPCorps
                 Rect cardRect = new Rect(_panelX + offsetX + i * (_cardWidth + _cardGap), cardY, _cardWidth, _cardHeight);
                 bool canAfford = DeploySystem.Instance.Energy >= data.deployCost;
 
-                Color borderColor = _isDragging ? _cardBorderDisabled : (canAfford ? _cardBorderAfford : _cardBorderNormal);
+                Color borderColor = canAfford ? _cardBorderAfford : _cardBorderNormal;
                 GUI.color = borderColor;
                 GUI.DrawTexture(cardRect, Texture2D.whiteTexture);
                 GUI.color = Color.white;
@@ -178,6 +283,41 @@ namespace PPCorps
                     StartDrag(data);
                     Event.current.Use();
                 }
+            }
+
+            if (_isDragging && !_isInFieldZone && _dragData != null)
+            {
+                Vector2 mp = Event.current.mousePosition;
+                Rect dcRect = new Rect(mp.x - _cardWidth / 2, mp.y - _cardHeight / 2, _cardWidth, _cardHeight);
+
+                GUI.color = _cardBorderAfford;
+                GUI.DrawTexture(dcRect, Texture2D.whiteTexture);
+                GUI.color = Color.white;
+
+                Rect dbg = new Rect(dcRect.x + 2, dcRect.y + 2, dcRect.width - 4, dcRect.height - 4);
+                GUI.color = _cardBg;
+                GUI.DrawTexture(dbg, Texture2D.whiteTexture);
+                GUI.color = Color.white;
+
+                if (_dragCardSprite != null)
+                {
+                    float ix = dcRect.x + (dcRect.width - _cardIconSize) * 0.5f;
+                    float iy = dcRect.y + 8;
+                    GUI.DrawTexture(new Rect(ix, iy, _cardIconSize, _cardIconSize), _dragCardSprite.texture);
+                }
+
+                string dn = !string.IsNullOrEmpty(_dragData.unitName) ? _dragData.unitName : _dragData.name;
+                GUIStyle ls = new GUIStyle(GUI.skin.label);
+                ls.fontSize = 14;
+                ls.alignment = TextAnchor.UpperCenter;
+                ls.normal.textColor = Color.white;
+                GUI.Label(new Rect(dcRect.x, dcRect.y + _cardIconSize + 12, dcRect.width, 20), dn, ls);
+
+                GUIStyle cs = new GUIStyle(GUI.skin.label);
+                cs.fontSize = 12;
+                cs.alignment = TextAnchor.LowerCenter;
+                cs.normal.textColor = Color.yellow;
+                GUI.Label(new Rect(dcRect.x, dcRect.y + _cardHeight - 22, dcRect.width, 18), $"费{_dragData.deployCost}", cs);
             }
         }
     }

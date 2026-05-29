@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8afb5686b4938364e8a58a317fd8e41c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _energyPerBar: 1
   _startEnergy: 3
+  _barsPerRegen: 15
   _playerSpawnY: -0.5
   _placeableColMin: 0
 --- !u!114 &6733103584637943660
@@ -62,18 +62,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cards:
-  - unitData: {fileID: 0}
-    cardImage: {fileID: 0}
+  - unitData: {fileID: 11400000, guid: 125da0ec165e6714c8275b78a19cd3d9, type: 2}
+    cardImage: {fileID: 21300000, guid: 2598784385ad53d48a544efe06287e32, type: 3}
   - unitData: {fileID: 11400000, guid: f7c789e52eb19894486624114a40ae57, type: 2}
     cardImage: {fileID: 21300000, guid: 2598784385ad53d48a544efe06287e32, type: 3}
-  _panelX: 525
-  _panelY: 750
+  _panelX: 565
+  _panelY: 700
   _panelWidth: 800
-  _panelHeight: 120
-  _cardWidth: 80
-  _cardHeight: 100
-  _cardGap: 10
-  _cardIconSize: 50
+  _panelHeight: 250
+  _cardWidth: 220
+  _cardHeight: 220
+  _cardGap: 50
+  _cardIconSize: 200
   _cardBg: {r: 0.15, g: 0.15, b: 0.15, a: 0.9}
   _cardBorderNormal: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _cardBorderAfford: {r: 0, g: 1, b: 0, a: 1}
