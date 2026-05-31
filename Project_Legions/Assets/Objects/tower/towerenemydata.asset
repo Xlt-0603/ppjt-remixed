@@ -17,9 +17,9 @@ MonoBehaviour:
   icon: {fileID: 0}
   unitType: 0
   unitClass: 0
-  maxHP: 200
+  maxHP: 2000
   attackPower: 80
-  attackRange: 5
+  attackRange: 7
   moveSpeed: 0
   deployCost: 3
   attackOnBeat1: 0

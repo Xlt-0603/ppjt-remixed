@@ -261,7 +261,8 @@ namespace PPCorps
         protected bool InAttackRange(UnitBase target)
         {
             if (target == null) return false;
-            for (int i = 0; i < OccupiedCols; i++)
+            int cols = OccupiedCols > 0 ? OccupiedCols : 1;
+            for (int i = 0; i < cols; i++)
             {
                 if (GridPosition.Distance(_gridPos + i, target._gridPos) <= data.attackRange)
                     return true;

@@ -13,22 +13,22 @@ MonoBehaviour:
   m_Name: "\u4E4C\u5179"
   m_EditorClassIdentifier: 
   unitName: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 2182408262907961060, guid: 1c6ba3aed244bb74aa02b1fb5b61445c, type: 3}
   icon: {fileID: 0}
   unitType: 0
   unitClass: 0
-  maxHP: 10
-  attackPower: 2
-  attackRange: 1
+  maxHP: 120
+  attackPower: 8
+  attackRange: 3
   moveSpeed: 1
-  deployCost: 3
-  attackOnBeat1: 1
-  attackOnBeat2: 0
-  attackOnBeat3: 0
-  attackOnBeat4: 0
-  attackOnBeat5: 1
-  attackOnBeat6: 0
-  attackOnBeat7: 0
-  attackOnBeat8: 0
+  deployCost: 1
+  attackOnBeat1: 0
+  attackOnBeat2: 1
+  attackOnBeat3: 1
+  attackOnBeat4: 1
+  attackOnBeat5: 0
+  attackOnBeat6: 1
+  attackOnBeat7: 1
+  attackOnBeat8: 1
   attackAnimBeats: 0
   preferFarthestTarget: 0
