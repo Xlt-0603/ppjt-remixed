@@ -150,8 +150,9 @@ namespace PPCorps
                 .Where(u => u != null && !u.IsDead)
                 .ToList();
 
+            int cols = GridManager.Instance.Cols;
             int frontmostPlayerCol = -1;
-            int backmostEnemyCol = 24;
+            int backmostEnemyCol = cols;
 
             foreach (var unit in units)
             {
@@ -170,12 +171,12 @@ namespace PPCorps
 
             int maxAllowed;
 
-            if (frontmostPlayerCol >= 12)
+            if (frontmostPlayerCol >= cols / 2)
                 maxAllowed = frontmostPlayerCol - 1;
             else
-                maxAllowed = 11;
+                maxAllowed = cols / 2 - 1;
 
-            if (backmostEnemyCol < 24)
+            if (backmostEnemyCol < cols)
                 maxAllowed = Mathf.Min(maxAllowed, backmostEnemyCol - 1);
 
             return maxAllowed;
