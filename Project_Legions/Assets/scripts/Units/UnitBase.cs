@@ -26,6 +26,34 @@ namespace PPCorps
         public bool IsEnemy => isEnemy;
         public bool IsDead => _isDead;
         public bool GridInitialized { get; set; }
+        public bool SuppressNormalBehavior { get; set; }
+        public UnitData Data => data;
+
+        public void SetGridPosition(GridPosition pos)
+        {
+            for (int i = 0; i < OccupiedCols; i++)
+                GridManager.Instance.Leave(_gridPos + i, this);
+            _gridPos = pos;
+            for (int i = 0; i < OccupiedCols; i++)
+                GridManager.Instance.Occupy(_gridPos + i, this);
+        }
+
+        public void ForceMove(GridPosition dest)
+        {
+            for (int i = 0; i < OccupiedCols; i++)
+                GridManager.Instance.Leave(_gridPos + i, this);
+            _gridPos = dest;
+            for (int i = 0; i < OccupiedCols; i++)
+                GridManager.Instance.Occupy(_gridPos + i, this);
+
+            _moveFrom = transform.position;
+            _moveTo = new Vector3(GridManager.Instance.GridToWorldX(_gridPos), transform.position.y, 0);
+            _moveStartBar = GameManager.Instance.Bar;
+            _moveStartBeat = GameManager.Instance.Beat;
+            _isMoving = true;
+            _currentAction = UnitAction.Moving;
+            SyncAnimator();
+        }
 
         public event Action<UnitBase> OnUnitDeath;
         public int CurrentHP => _currentHP;
@@ -82,6 +110,12 @@ namespace PPCorps
                 }
                 else
                     return;
+            }
+
+            if (SuppressNormalBehavior)
+            {
+                SyncAnimator();
+                return;
             }
 
             if (_attackAnimBeats > 0)
