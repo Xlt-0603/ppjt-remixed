@@ -32,5 +32,12 @@ namespace PPCorps
         [Header("抛投")]
         [Tooltip("勾选后优先攻击攻击范围内最远的敌人，而非最近的")]
         public bool preferFarthestTarget;
+
+        [Header("先锋")]
+        public bool isVanguard;
+        public int vanguardScanMin = 2;
+        public int vanguardScanMax = 5;
+        public int vanguardDamage = 3;
+        public int vanguardChargeBeats = 8;
     }
 }
