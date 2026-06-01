@@ -200,29 +200,9 @@ namespace PPCorps
             _save.AddCopy(item.name);
         }
 
-        [ContextMenu("单抽测试")]
-        private void TestPullSingle()
-        {
-            var result = Pull(1);
-            if (result.Count == 0) { Debug.LogWarning("卡池为空"); return; }
-            string msg = $"单抽: {result[0].name} ({result[0].rarity})";
-            Debug.Log(msg);
-            SaveHistory(result, false);
-        }
-
-        [ContextMenu("五连测试")]
-        private void TestPullMulti()
-        {
-            var result = Pull(5);
-            if (result.Count == 0) { Debug.LogWarning("卡池为空"); return; }
-            string msg = "五连: " + string.Join(", ", result.ConvertAll(i => $"{i.name}({i.rarity})"));
-            Debug.Log(msg);
-            SaveHistory(result, true);
-        }
-
         public string GetPityInfo()
         {
-            return $"彩: {_save.彩计数}/{小保底计数} ({( _save.大保底状态 ? "大保底" : "小保底")})  金: {_save.金计数}/{金保底计数}";
+            return $"彩={_save.彩计数}/{小保底计数} ({( _save.大保底状态 ? "大保底" : "小保底")}) 金={_save.金计数}/{金保底计数}";
         }
     }
 }
