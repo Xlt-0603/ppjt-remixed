@@ -14,30 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bannerName: 
   "up\u5F69":
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 335d72e05874ecd49a4b22d430c4778d, type: 2}
   "up\u91D1":
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: e970da3acb1ced2469802b247266a196, type: 2}
   "\u5E38\u9A7B\u5F69":
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 6df9be3830181ad44b1356006321e9ee, type: 2}
   "\u5E38\u9A7B\u91D1":
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  "\u5E38\u9A7B\u84DD": []
-  "\u5E38\u9A7B\u767D": []
+  - {fileID: 11400000, guid: 22926978e8bd91240a22f0e17dbb33b2, type: 2}
+  "\u5E38\u9A7B\u84DD":
+  - {fileID: 11400000, guid: 7be3d99c7d79f4a4693b15557797ca4f, type: 2}
+  "\u5E38\u9A7B\u767D":
+  - {fileID: 11400000, guid: d1799847aa1598141b65a22cd25d7898, type: 2}
