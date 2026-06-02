@@ -66,7 +66,7 @@ MonoBehaviour:
     cardImage: {fileID: 21300000, guid: 2598784385ad53d48a544efe06287e32, type: 3}
   - unitData: {fileID: 11400000, guid: f7c789e52eb19894486624114a40ae57, type: 2}
     cardImage: {fileID: 21300000, guid: 2598784385ad53d48a544efe06287e32, type: 3}
-  _panelX: 565
+  _panelX: 770
   _panelY: 700
   _panelWidth: 800
   _panelHeight: 250

@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2309656609385453061
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8263650512348396776}
+  - component: {fileID: 8404378357068252345}
+  - component: {fileID: 7112817934391302651}
+  - component: {fileID: 4459484923474699232}
+  m_Layer: 0
+  m_Name: Game Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8263650512348396776
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2309656609385453061}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.605387, y: -1.3150492, z: -0.09952783}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8404378357068252345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2309656609385453061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 747d693d925bed1419393e5b7bcd4f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bpm: 60
+  _startPaused: 0
+  _commander: {fileID: 0}
+  _playerTower: {fileID: 0}
+  _enemyTower: {fileID: 0}
+--- !u!114 &7112817934391302651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2309656609385453061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3e2929f42885064495a5c0ab601e5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _showDebugPanel: 1
+  _beatSquareSize: 80
+  _beatGap: 16
+  _beatOn: {r: 0.3, g: 1, b: 0.3, a: 1}
+  _beatOff: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+  _beatCurrent: {r: 0.1, g: 0.6, b: 1, a: 1}
+  _foldButtonSize: 30
+--- !u!114 &4459484923474699232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2309656609385453061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 624e8588cf0ee874aa1a813aebd0f4e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cellSize: 1.523438
+  _gridOrigin: {x: -17.51953, y: 0}
+  _cols: 24

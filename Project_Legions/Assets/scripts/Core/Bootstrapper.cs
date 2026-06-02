@@ -1,0 +1,108 @@
+using UnityEngine;
+
+namespace PPCorps
+{
+    public class Bootstrapper : MonoBehaviour
+    {
+        [Header("网格设置")]
+        [SerializeField] private float _cellSize = 1.5234375f;
+        [SerializeField] private Vector2 _gridOrigin = new Vector2(-18.28125f, -4.5f);
+        [SerializeField] private int _cols = 24;
+
+        [Header("部署设置")]
+        [SerializeField] private float _playerSpawnY = -0.5f;
+
+        [Header("AI卡组")]
+        [SerializeField] private AIDeckEntry[] _aiDeck;
+
+        [Header("塔引用（拖入场景中的塔）")]
+        [SerializeField] private UnitBase _playerTower;
+        [SerializeField] private UnitBase _enemyTower;
+
+        private void Awake()
+        {
+            SetupGridManager();
+            SetupGameManager();
+            SetupDeploySystem();
+            SetupDeployUI();
+            SetupAICommander();
+        }
+
+        private void SetupGridManager()
+        {
+            var gm = FindObjectOfType<GridManager>();
+            if (gm == null)
+            {
+                var go = new GameObject("GridManager");
+                gm = go.AddComponent<GridManager>();
+            }
+
+            var gridType = typeof(GridManager);
+            SetField(gm, "_cellSize", _cellSize);
+            SetField(gm, "_gridOrigin", _gridOrigin);
+            SetField(gm, "_cols", _cols);
+        }
+
+        private void SetupGameManager()
+        {
+            var gm = FindObjectOfType<GameManager>();
+            if (gm == null)
+            {
+                var go = new GameObject("GameManager");
+                gm = go.AddComponent<GameManager>();
+            }
+
+            if (_playerTower != null)
+            {
+                var field = typeof(GameManager).GetField("_playerTower",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                if (field != null) field.SetValue(gm, _playerTower);
+            }
+
+            if (_enemyTower != null)
+            {
+                var field = typeof(GameManager).GetField("_enemyTower",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                if (field != null) field.SetValue(gm, _enemyTower);
+            }
+        }
+
+        private void SetupDeploySystem()
+        {
+            var ds = FindObjectOfType<DeploySystem>();
+            if (ds == null)
+            {
+                var go = new GameObject("DeploySystem");
+                ds = go.AddComponent<DeploySystem>();
+            }
+
+            SetField(ds, "_playerSpawnY", _playerSpawnY);
+        }
+
+        private void SetupDeployUI()
+        {
+            if (FindObjectOfType<DeployUI>() != null) return;
+            var go = new GameObject("DeployUI");
+            go.AddComponent<DeployUI>();
+        }
+
+        private void SetupAICommander()
+        {
+            if (FindObjectOfType<AICommander>() != null) return;
+            if (_aiDeck == null || _aiDeck.Length == 0) return;
+            var go = new GameObject("AICommander");
+            var ai = go.AddComponent<AICommander>();
+            SetField(ai, "_deck", _aiDeck);
+        }
+
+        private static void SetField(object obj, string fieldName, object value)
+        {
+            var field = obj.GetType().GetField(fieldName,
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Public);
+            if (field != null)
+                field.SetValue(obj, value);
+        }
+    }
+}

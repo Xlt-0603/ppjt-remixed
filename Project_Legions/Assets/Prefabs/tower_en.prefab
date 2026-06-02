@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5079915263163563098}
   - component: {fileID: 4859135258244611704}
   - component: {fileID: 8798949310767437554}
+  - component: {fileID: 606337365586249028}
   m_Layer: 0
   m_Name: tower_en
   m_TagString: Untagged
@@ -131,3 +132,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 7766650515628379886}
+--- !u!114 &606337365586249028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8580802089805671314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d356300a84695542add3dcbd5724103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deck:
+  - unitData: {fileID: 11400000, guid: f4fc8f7725167484486cce87ab271e3a, type: 2}
+    weight: 1
+  - unitData: {fileID: 11400000, guid: 7f509599c4f24d34f897b4d7137a30ad, type: 2}
+    weight: 1
+  - unitData: {fileID: 11400000, guid: f7c789e52eb19894486624114a40ae57, type: 2}
+    weight: 1
+  - unitData: {fileID: 11400000, guid: 6d76165acf821704f9e0426a99203834, type: 2}
+    weight: 1
+  _startEnergy: 3
+  _barsPerRegen: 15
+  _enemySpawnY: -0.5
+  _placeableColMin: 0
