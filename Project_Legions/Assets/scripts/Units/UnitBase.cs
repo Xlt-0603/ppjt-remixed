@@ -27,6 +27,7 @@ namespace PPCorps
         public bool IsDead => _isDead;
         public bool GridInitialized { get; set; }
         public bool SuppressNormalBehavior { get; set; }
+        public bool BlockMovement { get; set; }
         public UnitData Data => data;
 
         public void SetGridPosition(GridPosition pos)
@@ -161,7 +162,7 @@ namespace PPCorps
 
             if (beat == 1)
             {
-                if (inCombat)
+                if (inCombat || BlockMovement)
                     _isMoving = false;
                 else
                 {
