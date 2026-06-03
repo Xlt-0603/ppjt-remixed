@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: 
   prefab: {fileID: 4889135463120181627, guid: 4ae1961d31b050e41b02b707113ce938, type: 3}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 66abcd878695bbb48aca3f8e94beb2b7, type: 3}
   unitType: 0
   unitClass: 0
   maxHP: 120
@@ -32,3 +32,8 @@ MonoBehaviour:
   attackOnBeat8: 0
   attackAnimBeats: 0
   preferFarthestTarget: 1
+  isVanguard: 0
+  vanguardScanMin: 2
+  vanguardScanMax: 5
+  vanguardDamage: 3
+  vanguardChargeBeats: 8

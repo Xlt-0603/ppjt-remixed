@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b540171adb2547148919d66567cc639e, type: 3}
-  m_Name: "\u5251\u58EB1"
+  m_Name: "\u5251\u58EB"
   m_EditorClassIdentifier: 
   unitName: 
   prefab: {fileID: 7921402890884614123, guid: 10a9507c1f607854881ec5d5ef0a168b, type: 3}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f5f1ce55b0d151941a39fb77b9119efa, type: 3}
   unitType: 0
   unitClass: 0
   maxHP: 250
@@ -32,3 +32,8 @@ MonoBehaviour:
   attackOnBeat8: 0
   attackAnimBeats: 5
   preferFarthestTarget: 0
+  isVanguard: 0
+  vanguardScanMin: 2
+  vanguardScanMax: 5
+  vanguardDamage: 3
+  vanguardChargeBeats: 8
