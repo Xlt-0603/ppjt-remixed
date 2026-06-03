@@ -39,6 +39,12 @@ namespace PPCorps
                 GridManager.Instance.Occupy(_gridPos + i, this);
         }
 
+        public void SetAction(UnitAction action)
+        {
+            _currentAction = action;
+            SyncAnimator();
+        }
+
         public void ForceMove(GridPosition dest)
         {
             for (int i = 0; i < OccupiedCols; i++)
