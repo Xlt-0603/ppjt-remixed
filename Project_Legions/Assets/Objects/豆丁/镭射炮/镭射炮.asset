@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: "\u956D\u5C04\u70AE"
   m_EditorClassIdentifier: 
   unitName: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 8514572382304620350, guid: c50d7dc0013fdf1469761a2ddd29a908, type: 3}
   icon: {fileID: 0}
   unitType: 0
   unitClass: 0

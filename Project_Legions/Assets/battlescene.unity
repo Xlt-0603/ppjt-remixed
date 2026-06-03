@@ -315,6 +315,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 7f509599c4f24d34f897b4d7137a30ad, type: 2}
     - target: {fileID: 6733103584637943660, guid: 56d5540bba8a59146b1f48d7b0bcac0e, type: 3}
+      propertyPath: _cards.Array.data[1].unitData
+      value: 
+      objectReference: {fileID: 11400000, guid: f7c789e52eb19894486624114a40ae57, type: 2}
+    - target: {fileID: 6733103584637943660, guid: 56d5540bba8a59146b1f48d7b0bcac0e, type: 3}
+      propertyPath: _cards.Array.data[1].cardImage
+      value: 
+      objectReference: {fileID: 21300000, guid: 2598784385ad53d48a544efe06287e32, type: 3}
+    - target: {fileID: 6733103584637943660, guid: 56d5540bba8a59146b1f48d7b0bcac0e, type: 3}
       propertyPath: _cards.Array.data[2].unitData
       value: 
       objectReference: {fileID: 11400000, guid: f4fc8f7725167484486cce87ab271e3a, type: 2}

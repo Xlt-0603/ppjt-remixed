@@ -49,6 +49,15 @@ namespace PPCorps
 
         private void Start()
         {
+            if (_playerTower == null)
+            {
+                var towers = FindObjectsOfType<Tower>();
+                foreach (var t in towers)
+                {
+                    if (!t.IsEnemy) _playerTower = t;
+                    else _enemyTower = t;
+                }
+            }
             if (_playerTower != null)
                 _playerTower.OnUnitDeath += OnPlayerTowerDeath;
             if (_enemyTower != null)
