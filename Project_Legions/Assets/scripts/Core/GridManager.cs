@@ -72,6 +72,9 @@ namespace PPCorps
             bool hasNonTower = list.Any(u => !(u is Tower));
             if (!(unit is Tower) && hasNonTower) return false;
 
+            if (!(unit is Tower) && list.Any(u => u is Tower && u.IsEnemy != unit.IsEnemy))
+                return false;
+
             return true;
         }
     }
