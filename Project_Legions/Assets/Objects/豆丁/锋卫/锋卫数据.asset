@@ -30,7 +30,22 @@ MonoBehaviour:
   attackOnBeat6: 0
   attackOnBeat7: 0
   attackOnBeat8: 0
-  attackAnimBeats: 0
+  animStartBeat1: 0
+  animEndBeat1: 0
+  animStartBeat2: 0
+  animEndBeat2: 0
+  animStartBeat3: 0
+  animEndBeat3: 0
+  animStartBeat4: 0
+  animEndBeat4: 0
+  animStartBeat5: 0
+  animEndBeat5: 0
+  animStartBeat6: 0
+  animEndBeat6: 0
+  animStartBeat7: 0
+  animEndBeat7: 0
+  animStartBeat8: 0
+  animEndBeat8: 0
   preferFarthestTarget: 0
   isVanguard: 1
   vanguardScanMin: 2

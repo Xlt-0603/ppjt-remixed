@@ -11,7 +11,6 @@ namespace PPCorps
         [SerializeField] protected Animator _animator;
 
         protected int _currentHP;
-        protected int _attackAnimBeats;
         protected bool _justArrived;
         protected UnitBase _currentTarget;
         protected bool _isDead;
@@ -125,49 +124,42 @@ namespace PPCorps
                 return;
             }
 
-            if (_attackAnimBeats > 0)
-                _attackAnimBeats--;
-
             _currentTarget = data.preferFarthestTarget ? FindFarthestInRangeEnemy() : FindNearestEnemy();
-            bool inCombat = data.preferFarthestTarget
-                ? _currentTarget != null
-                : _currentTarget != null && InAttackRange(_currentTarget);
 
-            if (data.attackAnimBeats > 0 && !inCombat)
-                _attackAnimBeats = 0;
-
-            if (data.attackAnimBeats > 0 && inCombat)
+            if (ShouldAttackOnBeat(beat))
             {
-                if (_attackAnimBeats > 0)
+                if (_currentTarget != null && InAttackRange(_currentTarget))
                 {
-                    if (!ShouldAttackOnBeat(beat))
+                    if (_justArrived)
+                    {
+                        _currentAction = UnitAction.Idle;
+                    }
+                    else
                     {
                         _currentAction = UnitAction.Attacking;
-                        SyncAnimator();
-                        return;
+                        if (_animator != null)
+                            _animator.Play("\u5251\u58EB\u6345", 0, 0f);
+                        _currentTarget.TakeDamage(data.attackPower);
                     }
                 }
                 else
                 {
-                    for (int i = 1; i <= 2; i++)
-                    {
-                        int cb = beat + i;
-                        if (cb > 8) cb -= 8;
-                        if (ShouldAttackOnBeat(cb))
-                        {
-                            _currentAction = UnitAction.Attacking;
-                            if (_animator != null)
-                                _animator.Play("\u5251\u58EB\u6345", 0, 0f);
-                            _attackAnimBeats = data.attackAnimBeats;
-                            SyncAnimator();
-                            return;
-                        }
-                    }
+                    _currentAction = UnitAction.Idle;
                 }
+                SyncAnimator();
+                return;
             }
 
-            if (beat == 1)
+            if (IsAnimatingOnBeat(beat))
             {
+                _currentAction = UnitAction.Attacking;
+                SyncAnimator();
+                return;
+            }
+
+            if (beat == 6)
+            {
+                bool inCombat = _currentTarget != null && InAttackRange(_currentTarget);
                 if (inCombat || BlockMovement)
                     _isMoving = false;
                 else
@@ -177,38 +169,7 @@ namespace PPCorps
                 }
             }
 
-            if (!ShouldAttackOnBeat(beat))
-            {
-                _currentAction = UnitAction.Idle;
-                SyncAnimator();
-                return;
-            }
-
-            if (_currentTarget != null && InAttackRange(_currentTarget))
-            {
-                if (_justArrived)
-                {
-                    _currentAction = UnitAction.Idle;
-                }
-                else
-                {
-                    bool extended = data.attackAnimBeats > 0;
-                    if (!extended || _attackAnimBeats <= 0)
-                    {
-                        _currentAction = UnitAction.Attacking;
-                        if (_animator != null)
-                            _animator.Play("\u5251\u58EB\u6345", 0, 0f);
-                        if (extended)
-                            _attackAnimBeats = data.attackAnimBeats;
-                    }
-                    _currentTarget.TakeDamage(data.attackPower);
-                    if (_currentTarget._isDead)
-                        _attackAnimBeats = 0;
-                }
-            }
-            else
-                _currentAction = UnitAction.Idle;
-
+            _currentAction = UnitAction.Idle;
             SyncAnimator();
         }
 
@@ -229,6 +190,60 @@ namespace PPCorps
             }
         }
 
+        private int AnimStartForBeat(int beat)
+        {
+            if (data == null) return 0;
+            switch (beat)
+            {
+                case 1: return data.animStartBeat1;
+                case 2: return data.animStartBeat2;
+                case 3: return data.animStartBeat3;
+                case 4: return data.animStartBeat4;
+                case 5: return data.animStartBeat5;
+                case 6: return data.animStartBeat6;
+                case 7: return data.animStartBeat7;
+                case 8: return data.animStartBeat8;
+                default: return 0;
+            }
+        }
+
+        private int AnimEndForBeat(int beat)
+        {
+            if (data == null) return 0;
+            switch (beat)
+            {
+                case 1: return data.animEndBeat1;
+                case 2: return data.animEndBeat2;
+                case 3: return data.animEndBeat3;
+                case 4: return data.animEndBeat4;
+                case 5: return data.animEndBeat5;
+                case 6: return data.animEndBeat6;
+                case 7: return data.animEndBeat7;
+                case 8: return data.animEndBeat8;
+                default: return 0;
+            }
+        }
+
+        private bool IsAnimatingOnBeat(int beat)
+        {
+            for (int b = 1; b <= 8; b++)
+            {
+                if (!ShouldAttackOnBeat(b)) continue;
+                int start = AnimStartForBeat(b);
+                int end = AnimEndForBeat(b);
+                if (start == 0) continue;
+                if (start <= end)
+                {
+                    if (beat >= start && beat <= end) return true;
+                }
+                else
+                {
+                    if (beat >= start || beat <= end) return true;
+                }
+            }
+            return false;
+        }
+
         protected void TryMove()
         {
             int dir = isEnemy ? -1 : 1;
@@ -246,8 +261,6 @@ namespace PPCorps
                 var blockers = GridManager.Instance.GetOccupants(dest);
                 if (blockers.Count > 0 && blockers[0].isEnemy != isEnemy)
                 {
-                    if (data.attackAnimBeats > 0)
-                        return;
                     _currentTarget = blockers[0];
                     _currentAction = UnitAction.Attacking;
                     if (_animator != null)
@@ -321,7 +334,6 @@ namespace PPCorps
             {
                 if (unit == null || unit == this || unit._isDead) continue;
                 if (unit.isEnemy == isEnemy) continue;
-                if (data.attackAnimBeats > 0 && unit._isMoving) continue;
 
                 int dist = GridPosition.Distance(_gridPos, unit._gridPos);
                 if (dist < minDist || (dist == minDist && nearest is Tower && !(unit is Tower)))
@@ -344,7 +356,6 @@ namespace PPCorps
             {
                 if (unit == null || unit == this || unit._isDead) continue;
                 if (unit.isEnemy == isEnemy) continue;
-                if (data.attackAnimBeats > 0 && unit._isMoving) continue;
                 if (!InAttackRange(unit)) continue;
 
                 int dist = GridPosition.Distance(_gridPos, unit._gridPos);
