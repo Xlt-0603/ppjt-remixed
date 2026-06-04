@@ -14,6 +14,9 @@ namespace PPCorps
         [Header("卡牌配置")]
         [SerializeField] private DeployCardEntry[] _cards;
 
+        [Header("卡组轮换（可选，不配则展示全部 _cards）")]
+        [SerializeField] private DeckManager _deckManager;
+
         [Header("面板位置")]
         [SerializeField] private int _panelX;
         [SerializeField] private int _panelY;
@@ -29,6 +32,7 @@ namespace PPCorps
         [SerializeField] private Color _cardBorderNormal = new Color(0.5f, 0.5f, 0.5f);
         [SerializeField] private Color _cardBorderAfford = new Color(0f, 1f, 0f);
         [SerializeField] private Color _cardBorderDisabled = new Color(0.3f, 0.3f, 0.3f);
+        [SerializeField] private Color _cardBgDisabled = new Color(0.1f, 0.1f, 0.1f, 0.6f);
         [SerializeField] private Color _ghostValid = new Color(0f, 1f, 0f, 0.6f);
         [SerializeField] private Color _ghostInvalid = new Color(1f, 0f, 0f, 0.6f);
 
@@ -40,6 +44,12 @@ namespace PPCorps
         private GridPosition _dragGridPos;
         private bool _isInFieldZone;
         private int _dragCardIndex = -1;
+
+        private void Start()
+        {
+            if (_deckManager == null)
+                _deckManager = FindObjectOfType<DeckManager>();
+        }
 
         private void Update()
         {
@@ -60,7 +70,7 @@ namespace PPCorps
             if (_isInFieldZone)
                 UpdateFieldDrag();
             else
-                UpdateCardDrag(mousePos);
+                UpdateCardDrag();
 
             if (Input.GetMouseButtonUp(0))
                 EndDrag(false);
@@ -125,7 +135,7 @@ namespace PPCorps
             return new GridPosition(-1);
         }
 
-        private void UpdateCardDrag(Vector3 mousePos)
+        private void UpdateCardDrag()
         {
             if (_ghost != null) _ghost.SetActive(false);
         }
@@ -135,30 +145,17 @@ namespace PPCorps
             if (_isDragging) return;
             if (GameManager.Instance.State != GameState.Deploy && GameManager.Instance.State != GameState.Battle) return;
             if (DeploySystem.Instance == null || DeploySystem.Instance.Energy < data.deployCost) return;
+            if (_deckManager != null && !_deckManager.CanUseUnit(data)) return;
 
             _isDragging = true;
             _dragData = data;
-            _dragCardIndex = System.Array.FindIndex(_cards, e => e != null && e.unitData == data);
 
-            _dragCardSprite = null;
-            foreach (var entry in _cards)
-            {
-                if (entry != null && entry.unitData == data)
-                {
-                    _dragCardSprite = entry.cardImage;
-                    break;
-                }
-            }
-            if (_dragCardSprite == null)
-            {
-                if (data.icon != null)
-                    _dragCardSprite = data.icon;
-                else
-                {
-                    SpriteRenderer sr = data.prefab?.GetComponentInChildren<SpriteRenderer>();
-                    if (sr != null) _dragCardSprite = sr.sprite;
-                }
-            }
+            if (_deckManager != null)
+                _dragCardIndex = GetHandIndex(data);
+            else
+                _dragCardIndex = System.Array.FindIndex(_cards, e => e != null && e.unitData == data);
+
+            _dragCardSprite = GetCardSprite(data);
 
             _ghost = new GameObject("DeployGhost");
             _ghost.transform.SetParent(transform);
@@ -175,7 +172,33 @@ namespace PPCorps
             if (_isInFieldZone)
                 UpdateFieldDrag();
             else
-                UpdateCardDrag(Input.mousePosition);
+                UpdateCardDrag();
+        }
+
+        private Sprite GetCardSprite(UnitData data)
+        {
+            if (_cards != null)
+            {
+                foreach (var e in _cards)
+                {
+                    if (e != null && e.unitData == data && e.cardImage != null)
+                        return e.cardImage;
+                }
+            }
+            if (data.icon != null) return data.icon;
+            SpriteRenderer sr = data.prefab?.GetComponentInChildren<SpriteRenderer>();
+            return sr != null ? sr.sprite : null;
+        }
+
+        private int GetHandIndex(UnitData data)
+        {
+            var hand = _deckManager?.Hand;
+            if (hand == null) return -1;
+            for (int i = 0; i < hand.Count; i++)
+            {
+                if (hand[i] == data) return i;
+            }
+            return -1;
         }
 
         private void EndDrag(bool cancelled)
@@ -187,6 +210,9 @@ namespace PPCorps
                 DeploySystem.Instance.QueueDeploy(_dragData, _dragGridPos, _ghost);
                 _ghost = null;
                 _ghostRenderer = null;
+
+                if (_deckManager != null && _dragCardIndex >= 0)
+                    _deckManager.UseCard(_dragCardIndex);
             }
             else
             {
@@ -205,13 +231,18 @@ namespace PPCorps
         {
             if (GameManager.Instance == null || DeploySystem.Instance == null) return;
             if (GameManager.Instance.State != GameState.Deploy && GameManager.Instance.State != GameState.Battle) return;
-            if (_cards == null || _cards.Length == 0) return;
 
-            int totalW = _cards.Length * _cardWidth + (_cards.Length - 1) * _cardGap;
+            var hand = _deckManager != null ? _deckManager.Hand : null;
+            bool useRotation = hand != null && hand.Count > 0;
+
+            int displayCount = useRotation ? hand.Count : (_cards != null ? _cards.Length : 0);
+            if (displayCount == 0) return;
+
+            int totalW = displayCount * _cardWidth + (displayCount - 1) * _cardGap;
             if (totalW > _panelWidth)
             {
-                _cardGap = Mathf.Max(2, (_panelWidth - _cards.Length * _cardWidth) / (_cards.Length - 1));
-                totalW = _cards.Length * _cardWidth + (_cards.Length - 1) * _cardGap;
+                _cardGap = Mathf.Max(2, (_panelWidth - displayCount * _cardWidth) / (displayCount - 1));
+                totalW = displayCount * _cardWidth + (displayCount - 1) * _cardGap;
             }
             int offsetX = (_panelWidth - totalW) / 2;
 
@@ -219,9 +250,12 @@ namespace PPCorps
 
             float cardY = _panelY + (_panelHeight - _cardHeight) / 2;
 
-            for (int i = 0; i < _cards.Length; i++)
+            for (int i = 0; i < displayCount; i++)
             {
-                if (_isDragging && i == _dragCardIndex)
+                UnitData data = useRotation ? hand[i] : (_cards[i] != null ? _cards[i].unitData : null);
+                if (data == null) continue;
+
+                if (_isDragging && i == _dragCardIndex && useRotation)
                 {
                     Rect slotRect = new Rect(_panelX + offsetX + i * (_cardWidth + _cardGap), cardY, _cardWidth, _cardHeight);
                     GUI.color = new Color(0.2f, 0.2f, 0.2f, 0.5f);
@@ -230,34 +264,22 @@ namespace PPCorps
                     continue;
                 }
 
-                DeployCardEntry entry = _cards[i];
-                if (entry == null || entry.unitData == null) continue;
-
-                UnitData data = entry.unitData;
                 Rect cardRect = new Rect(_panelX + offsetX + i * (_cardWidth + _cardGap), cardY, _cardWidth, _cardHeight);
                 bool canAfford = DeploySystem.Instance.Energy >= data.deployCost;
+                bool canUse = _deckManager == null || _deckManager.CanUseUnit(data);
+                bool disabled = !canUse;
 
-                Color borderColor = canAfford ? _cardBorderAfford : _cardBorderNormal;
+                Color borderColor = disabled ? _cardBorderDisabled : (canAfford ? _cardBorderAfford : _cardBorderNormal);
                 GUI.color = borderColor;
                 GUI.DrawTexture(cardRect, Texture2D.whiteTexture);
                 GUI.color = Color.white;
 
                 Rect bgRect = new Rect(cardRect.x + 2, cardRect.y + 2, cardRect.width - 4, cardRect.height - 4);
-                GUI.color = canAfford ? _cardBg : Color.Lerp(_cardBg, Color.black, 0.4f);
+                GUI.color = disabled ? _cardBgDisabled : (canAfford ? _cardBg : Color.Lerp(_cardBg, Color.black, 0.4f));
                 GUI.DrawTexture(bgRect, Texture2D.whiteTexture);
                 GUI.color = Color.white;
 
-                Sprite cardSprite = entry.cardImage;
-                if (cardSprite == null)
-                {
-                    if (data.icon != null)
-                        cardSprite = data.icon;
-                    else
-                    {
-                        SpriteRenderer sr = data.prefab?.GetComponentInChildren<SpriteRenderer>();
-                        if (sr != null) cardSprite = sr.sprite;
-                    }
-                }
+                Sprite cardSprite = GetCardSprite(data);
                 if (cardSprite != null)
                 {
                     float iconX = cardRect.x + (cardRect.width - _cardIconSize) * 0.5f;
@@ -269,16 +291,16 @@ namespace PPCorps
                 GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
                 labelStyle.fontSize = 14;
                 labelStyle.alignment = TextAnchor.UpperCenter;
-                labelStyle.normal.textColor = canAfford ? Color.white : Color.gray;
+                labelStyle.normal.textColor = disabled ? Color.gray : (canAfford ? Color.white : Color.gray);
                 GUI.Label(new Rect(cardRect.x, cardRect.y + _cardIconSize + 12, cardRect.width, 20), displayName, labelStyle);
 
                 GUIStyle costStyle = new GUIStyle(GUI.skin.label);
                 costStyle.fontSize = 12;
                 costStyle.alignment = TextAnchor.LowerCenter;
-                costStyle.normal.textColor = canAfford ? Color.yellow : Color.gray;
-                GUI.Label(new Rect(cardRect.x, cardRect.y + _cardHeight - 22, cardRect.width, 18), $"费{data.deployCost}", costStyle);
+                costStyle.normal.textColor = disabled ? Color.gray : (canAfford ? Color.yellow : Color.gray);
+                GUI.Label(new Rect(cardRect.x, cardRect.y + _cardHeight - 22, cardRect.width, 18), $"\u8d39{data.deployCost}", costStyle);
 
-                if (!_isDragging && Event.current.type == EventType.MouseDown && cardRect.Contains(Event.current.mousePosition))
+                if (!_isDragging && !disabled && Event.current.type == EventType.MouseDown && cardRect.Contains(Event.current.mousePosition))
                 {
                     StartDrag(data);
                     Event.current.Use();
@@ -317,7 +339,7 @@ namespace PPCorps
                 cs.fontSize = 12;
                 cs.alignment = TextAnchor.LowerCenter;
                 cs.normal.textColor = Color.yellow;
-                GUI.Label(new Rect(dcRect.x, dcRect.y + _cardHeight - 22, dcRect.width, 18), $"费{_dragData.deployCost}", cs);
+                GUI.Label(new Rect(dcRect.x, dcRect.y + _cardHeight - 22, dcRect.width, 18), $"\u8d39{_dragData.deployCost}", cs);
             }
         }
     }

@@ -42,7 +42,6 @@ namespace PPCorps
             if (ShouldAttackOnBeat(beat) && HasEnemyInRange())
                 DoPierceAttack();
 
-            // suppress UnitBase normal behavior so it doesn't double-attack
             _unit.SuppressNormalBehavior = true;
         }
 
@@ -106,13 +105,18 @@ namespace PPCorps
             int endCol = _unit.IsEnemy ? 0 : GridManager.Instance.Cols - 1;
             if (dir < 0) { int t = startCol; startCol = endCol; endCol = t; }
 
+            var targets = new System.Collections.Generic.List<UnitBase>();
             foreach (var target in GameManager.Instance.GetAllUnits())
             {
                 if (target == null || target == _unit || target.IsDead) continue;
                 if (target.IsEnemy == _unit.IsEnemy) continue;
                 int c = target.GridPos.col;
-                if (c < startCol || c > endCol) continue;
+                if (c >= startCol && c <= endCol)
+                    targets.Add(target);
+            }
 
+            foreach (var target in targets)
+            {
                 int damage = _unit.Data.attackPower;
                 if (target is Tower)
                     damage = damage / 2;

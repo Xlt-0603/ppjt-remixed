@@ -191,7 +191,18 @@ namespace PPCorps
             if (!GridManager.Instance.IsInBounds(pos)) return false;
             if (GridManager.Instance.IsReserved(pos)) return false;
             if (GridManager.Instance.GetOccupants(pos).Count > 0) return false;
+            if (IsPlayerUnitOnField(data)) return false;
             return true;
+        }
+
+        private bool IsPlayerUnitOnField(UnitData data)
+        {
+            foreach (var unit in GameManager.Instance.GetAllUnits())
+            {
+                if (unit == null || unit.IsDead || unit.IsEnemy) continue;
+                if (unit.Data == data) return true;
+            }
+            return false;
         }
 
         private static void SetField(object obj, string fieldName, object value)

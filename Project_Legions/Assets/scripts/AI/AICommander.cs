@@ -14,8 +14,11 @@ namespace PPCorps
 
     public class AICommander : MonoBehaviour
     {
-        [Header("卡组")]
+        [Header("卡组（仅权重配置）")]
         [SerializeField] private AIDeckEntry[] _deck;
+
+        [Header("AI手牌")]
+        [SerializeField] private DeckManager _deckManager;
 
         [Header("费用（与玩家相同）")]
         [SerializeField] private int _startEnergy = 3;
@@ -32,7 +35,7 @@ namespace PPCorps
         private int _energy;
         private int _regenStep;
         private int _barsSinceLastRegen;
-        private List<int> _recentDeployIndices = new List<int>();
+        private List<UnitData> _recentDeploys = new List<UnitData>();
 
         private List<PendingAIDeploy> _pendingDeploys = new List<PendingAIDeploy>();
 
@@ -44,6 +47,8 @@ namespace PPCorps
 
         private void Start()
         {
+            if (_deckManager == null)
+                _deckManager = FindObjectOfType<DeckManager>();
             _energy = _startEnergy;
             GameManager.Instance.OnBeat += OnGameBeat;
             GameManager.Instance.OnStateChanged += OnStateChanged;
@@ -94,20 +99,42 @@ namespace PPCorps
 
         private class AffordEntry
         {
-            public int index;
-            public AIDeckEntry entry;
+            public int handIndex;
+            public UnitData data;
+            public int weight;
         }
 
         private void TryDeploy()
         {
-            if (_deck == null || _deck.Length == 0) return;
+            if (_deckManager != null && _deckManager.Hand != null && _deckManager.Hand.Count > 0)
+                TryDeployRotated();
+            else if (_deck != null && _deck.Length > 0)
+                TryDeployLegacy();
+        }
+
+        private void TryDeployRotated()
+        {
+            var hand = _deckManager.Hand;
+            if (hand == null || hand.Count == 0) return;
 
             var affordable = new List<AffordEntry>();
-            for (int i = 0; i < _deck.Length; i++)
+            for (int i = 0; i < hand.Count; i++)
             {
-                var e = _deck[i];
-                if (e != null && e.unitData != null && _energy >= e.unitData.deployCost)
-                    affordable.Add(new AffordEntry { index = i, entry = e });
+                UnitData data = hand[i];
+                if (data == null) continue;
+                if (_energy < data.deployCost) continue;
+                if (!_deckManager.CanUseUnit(data)) continue;
+
+                int weight = 1;
+                foreach (var e in _deck)
+                {
+                    if (e != null && e.unitData == data)
+                    {
+                        weight = e.weight;
+                        break;
+                    }
+                }
+                affordable.Add(new AffordEntry { handIndex = i, data = data, weight = weight });
             }
 
             if (affordable.Count == 0) return;
@@ -116,7 +143,44 @@ namespace PPCorps
             if (pick < 0) return;
 
             AffordEntry chosen = affordable[pick];
-            UnitData data = chosen.entry.unitData;
+
+            GridPosition pos = PickColumn(chosen.data);
+            if (pos.col < 0) return;
+
+            UnitData used = _deckManager.UseCard(chosen.handIndex);
+            if (used == null) return;
+
+            _energy -= used.deployCost;
+            GridManager.Instance.Reserve(pos);
+
+            _pendingDeploys.Add(new PendingAIDeploy
+            {
+                gridPos = pos,
+                data = used
+            });
+
+            _recentDeploys.Add(used);
+            if (_recentDeploys.Count > 10)
+                _recentDeploys.RemoveAt(0);
+        }
+
+        private void TryDeployLegacy()
+        {
+            var affordable = new List<AffordEntry>();
+            for (int i = 0; i < _deck.Length; i++)
+            {
+                var e = _deck[i];
+                if (e != null && e.unitData != null && _energy >= e.unitData.deployCost)
+                    affordable.Add(new AffordEntry { handIndex = i, data = e.unitData, weight = e.weight });
+            }
+
+            if (affordable.Count == 0) return;
+
+            int pick = PickUnit(affordable);
+            if (pick < 0) return;
+
+            AffordEntry chosen = affordable[pick];
+            UnitData data = chosen.data;
 
             GridPosition pos = PickColumn(data);
             if (pos.col < 0) return;
@@ -130,9 +194,9 @@ namespace PPCorps
                 data = data
             });
 
-            _recentDeployIndices.Add(chosen.index);
-            if (_recentDeployIndices.Count > 5)
-                _recentDeployIndices.RemoveAt(0);
+            _recentDeploys.Add(data);
+            if (_recentDeploys.Count > 10)
+                _recentDeploys.RemoveAt(0);
         }
 
         private int PickUnit(List<AffordEntry> affordable)
@@ -142,15 +206,15 @@ namespace PPCorps
 
             for (int i = 0; i < affordable.Count; i++)
             {
-                int idx = affordable[i].index;
-                AIDeckEntry entry = affordable[i].entry;
+                UnitData data = affordable[i].data;
+                int weight = affordable[i].weight;
 
-                int lastUsed = _recentDeployIndices.LastIndexOf(idx);
-                int distance = lastUsed >= 0 ? _recentDeployIndices.Count - lastUsed : _recentDeployIndices.Count + 1;
+                int lastUsed = _recentDeploys.LastIndexOf(data);
+                int distance = lastUsed >= 0 ? _recentDeploys.Count - lastUsed : _recentDeploys.Count + 1;
 
                 float diversityBonus = distance * 2f;
-                float weightBonus = entry.weight;
-                float costBonus = entry.unitData.deployCost <= _energy / 2 ? 3f : 0f;
+                float weightBonus = weight;
+                float costBonus = data.deployCost <= _energy / 2 ? 3f : 0f;
 
                 float score = diversityBonus + weightBonus + costBonus;
                 if (score > bestScore)
@@ -235,7 +299,18 @@ namespace PPCorps
             if (!GridManager.Instance.IsInBounds(pos)) return false;
             if (GridManager.Instance.IsReserved(pos)) return false;
             if (GridManager.Instance.GetOccupants(pos).Count > 0) return false;
+            if (IsEnemyUnitOnField(data)) return false;
             return true;
+        }
+
+        private bool IsEnemyUnitOnField(UnitData data)
+        {
+            foreach (var unit in GameManager.Instance.GetAllUnits())
+            {
+                if (unit == null || unit.IsDead || !unit.IsEnemy) continue;
+                if (unit.Data == data) return true;
+            }
+            return false;
         }
 
         private void ExecutePendingDeploys()

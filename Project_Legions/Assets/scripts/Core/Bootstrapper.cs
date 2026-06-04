@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace PPCorps
@@ -24,7 +25,9 @@ namespace PPCorps
             SetupGridManager();
             SetupGameManager();
             SetupDeploySystem();
+            SetupPlayerDeck();
             SetupDeployUI();
+            SetupAIDeck();
             SetupAICommander();
         }
 
@@ -37,7 +40,6 @@ namespace PPCorps
                 gm = go.AddComponent<GridManager>();
             }
 
-            var gridType = typeof(GridManager);
             SetField(gm, "_cellSize", _cellSize);
             SetField(gm, "_gridOrigin", _gridOrigin);
             SetField(gm, "_cols", _cols);
@@ -79,11 +81,59 @@ namespace PPCorps
             SetField(ds, "_playerSpawnY", _playerSpawnY);
         }
 
+        private void SetupPlayerDeck()
+        {
+            if (FindObjectsOfType<DeckManager>().Any(d => d != null && !d.IsEnemy)) return;
+
+            // auto-create player deck from DeployUI._cards
+            var ui = FindObjectOfType<DeployUI>();
+            if (ui == null) return;
+
+            var cardsField = typeof(DeployUI).GetField("_cards",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var cards = cardsField?.GetValue(ui) as DeployCardEntry[];
+            if (cards == null || cards.Length == 0) return;
+
+            var deckData = cards
+                .Where(e => e != null && e.unitData != null)
+                .Select(e => e.unitData)
+                .ToArray();
+            if (deckData.Length == 0) return;
+
+            var go = new GameObject("PlayerDeck");
+            var dm = go.AddComponent<DeckManager>();
+            SetField(dm, "_deckCards", deckData);
+            SetField(dm, "_isEnemy", false);
+            SetField(dm, "_handSize", 4);
+        }
+
         private void SetupDeployUI()
         {
-            if (FindObjectOfType<DeployUI>() != null) return;
-            var go = new GameObject("DeployUI");
-            go.AddComponent<DeployUI>();
+            var ui = FindObjectOfType<DeployUI>();
+            if (ui == null)
+            {
+                var go = new GameObject("DeployUI");
+                ui = go.AddComponent<DeployUI>();
+            }
+
+            if (ui == null) return;
+
+            var playerDeck = FindObjectsOfType<DeckManager>().FirstOrDefault(d => d != null && !d.IsEnemy);
+            if (playerDeck != null)
+                SetField(ui, "_deckManager", playerDeck);
+        }
+
+        private void SetupAIDeck()
+        {
+            if (_aiDeck == null || _aiDeck.Length == 0) return;
+            if (FindObjectsOfType<DeckManager>().Any(d => d != null && d.IsEnemy)) return;
+            var unitDataArray = _aiDeck.Select(e => e.unitData).Where(d => d != null).ToArray();
+            if (unitDataArray.Length == 0) return;
+            var go = new GameObject("AIDeck");
+            var dm = go.AddComponent<DeckManager>();
+            SetField(dm, "_deckCards", unitDataArray);
+            SetField(dm, "_isEnemy", true);
+            SetField(dm, "_handSize", 4);
         }
 
         private void SetupAICommander()
@@ -93,6 +143,10 @@ namespace PPCorps
             var go = new GameObject("AICommander");
             var ai = go.AddComponent<AICommander>();
             SetField(ai, "_deck", _aiDeck);
+
+            var aiDeck = FindObjectsOfType<DeckManager>().FirstOrDefault(d => d != null && d.IsEnemy);
+            if (aiDeck != null)
+                SetField(ai, "_deckManager", aiDeck);
         }
 
         private static void SetField(object obj, string fieldName, object value)
