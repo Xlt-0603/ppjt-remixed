@@ -24,9 +24,9 @@ MonoBehaviour:
   deployCost: 1
   attackOnBeat1: 0
   attackOnBeat2: 0
-  attackOnBeat3: 1
+  attackOnBeat3: 0
   attackOnBeat4: 0
-  attackOnBeat5: 0
+  attackOnBeat5: 1
   attackOnBeat6: 0
   attackOnBeat7: 0
   attackOnBeat8: 0

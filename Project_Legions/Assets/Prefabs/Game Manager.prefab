@@ -82,6 +82,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 624e8588cf0ee874aa1a813aebd0f4e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cellSize: 1.523438
-  _gridOrigin: {x: -17.51953, y: 0}
+  _cellSize: 1.5234375
+  _gridOrigin: {x: -18.28125, y: 0}
   _cols: 24
