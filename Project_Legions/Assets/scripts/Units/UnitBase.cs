@@ -126,6 +126,17 @@ namespace PPCorps
 
             _currentTarget = data.preferFarthestTarget ? FindFarthestInRangeEnemy() : FindNearestEnemy();
 
+            if (beat == 6)
+            {
+                bool inCombat = _currentTarget != null && InAttackRange(_currentTarget);
+                if (!inCombat && !BlockMovement)
+                {
+                    TryMove();
+                    return;
+                }
+                _isMoving = false;
+            }
+
             if (ShouldAttackOnBeat(beat))
             {
                 if (_currentTarget != null && InAttackRange(_currentTarget))
@@ -155,18 +166,6 @@ namespace PPCorps
                 _currentAction = UnitAction.Attacking;
                 SyncAnimator();
                 return;
-            }
-
-            if (beat == 6)
-            {
-                bool inCombat = _currentTarget != null && InAttackRange(_currentTarget);
-                if (inCombat || BlockMovement)
-                    _isMoving = false;
-                else
-                {
-                    TryMove();
-                    return;
-                }
             }
 
             _currentAction = UnitAction.Idle;
