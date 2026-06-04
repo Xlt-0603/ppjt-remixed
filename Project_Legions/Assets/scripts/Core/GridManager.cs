@@ -17,6 +17,7 @@ namespace PPCorps
 
         private void Awake() => Instance = this;
 
+        /// <summary>返回格子中心的 X 坐标</summary>
         public float GridToWorldX(GridPosition pos)
         {
             return _gridOrigin.x + pos.col * _cellSize + _cellSize * 0.5f;
@@ -24,7 +25,8 @@ namespace PPCorps
 
         public GridPosition WorldToGrid(Vector3 worldPos)
         {
-            int col = Mathf.RoundToInt((worldPos.x - _gridOrigin.x) / _cellSize);
+            float c = (worldPos.x - _gridOrigin.x) / _cellSize - 0.5f;
+            int col = Mathf.RoundToInt(c);
             col = Mathf.Clamp(col, 0, _cols - 1);
             return new GridPosition(col);
         }
