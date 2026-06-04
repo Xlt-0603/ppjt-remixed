@@ -123,7 +123,6 @@ namespace PPCorps
                 UnitData data = hand[i];
                 if (data == null) continue;
                 if (_energy < data.deployCost) continue;
-                if (!_deckManager.CanUseUnit(data)) continue;
 
                 int weight = 1;
                 foreach (var e in _deck)

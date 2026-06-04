@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PPCorps
@@ -11,6 +12,7 @@ namespace PPCorps
 
         private List<UnitData> _drawPile;
         private List<UnitData> _hand;
+        private List<UnitData> _inPlay;
         private bool _initialized;
 
         public IReadOnlyList<UnitData> Hand => _hand;
@@ -26,11 +28,52 @@ namespace PPCorps
                 return;
             }
             _drawPile = new List<UnitData>(_deckCards);
+            _inPlay = new List<UnitData>();
             Shuffle();
             _hand = new List<UnitData>(_handSize);
             FillHand();
             _initialized = true;
             OnHandChanged?.Invoke();
+            GameManager.Instance.OnBeat += OnGameBeat;
+        }
+
+        private void OnDestroy()
+        {
+            if (GameManager.Instance != null)
+                GameManager.Instance.OnBeat -= OnGameBeat;
+        }
+
+        private void OnGameBeat(int bar, int beat)
+        {
+            if (!_initialized) return;
+
+            // return cards whose unit has died
+            bool returned = false;
+            for (int i = _inPlay.Count - 1; i >= 0; i--)
+            {
+                if (!IsUnitAlive(_inPlay[i]))
+                {
+                    _drawPile.Add(_inPlay[i]);
+                    _inPlay.RemoveAt(i);
+                    returned = true;
+                }
+            }
+            if (returned)
+            {
+                FillHand();
+                OnHandChanged?.Invoke();
+            }
+        }
+
+        private bool IsUnitAlive(UnitData data)
+        {
+            foreach (var unit in GameManager.Instance.GetAllUnits())
+            {
+                if (unit == null || unit.IsDead) continue;
+                if (unit.IsEnemy != _isEnemy) continue;
+                if (unit.Data == data) return true;
+            }
+            return false;
         }
 
         private void Shuffle()
@@ -58,35 +101,17 @@ namespace PPCorps
             return top;
         }
 
-        public bool CanUseCard(int handIndex)
-        {
-            if (!_initialized) return false;
-            if (handIndex < 0 || handIndex >= _hand.Count) return false;
-            return CanUseUnit(_hand[handIndex]);
-        }
-
-        public bool CanUseUnit(UnitData data)
-        {
-            if (data == null || !_initialized) return false;
-            foreach (var unit in GameManager.Instance.GetAllUnits())
-            {
-                if (unit == null || unit.IsDead) continue;
-                if (unit.IsEnemy != _isEnemy) continue;
-                if (unit.Data == data) return false;
-            }
-            return true;
-        }
-
         public UnitData UseCard(int handIndex)
         {
             if (!_initialized) return null;
             if (handIndex < 0 || handIndex >= _hand.Count) return null;
             UnitData card = _hand[handIndex];
-            if (!CanUseUnit(card)) return null;
 
             _hand.RemoveAt(handIndex);
-            _drawPile.Add(card);
-            _hand.Add(DrawFromPile());
+            _inPlay.Add(card);
+            UnitData next = DrawFromPile();
+            if (next != null)
+                _hand.Add(next);
             OnHandChanged?.Invoke();
             return card;
         }

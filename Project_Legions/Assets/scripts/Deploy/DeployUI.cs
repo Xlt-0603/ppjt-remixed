@@ -145,7 +145,6 @@ namespace PPCorps
             if (_isDragging) return;
             if (GameManager.Instance.State != GameState.Deploy && GameManager.Instance.State != GameState.Battle) return;
             if (DeploySystem.Instance == null || DeploySystem.Instance.Energy < data.deployCost) return;
-            if (_deckManager != null && !_deckManager.CanUseUnit(data)) return;
 
             _isDragging = true;
             _dragData = data;
@@ -266,8 +265,7 @@ namespace PPCorps
 
                 Rect cardRect = new Rect(_panelX + offsetX + i * (_cardWidth + _cardGap), cardY, _cardWidth, _cardHeight);
                 bool canAfford = DeploySystem.Instance.Energy >= data.deployCost;
-                bool canUse = _deckManager == null || _deckManager.CanUseUnit(data);
-                bool disabled = !canUse;
+                bool disabled = false;
 
                 Color borderColor = disabled ? _cardBorderDisabled : (canAfford ? _cardBorderAfford : _cardBorderNormal);
                 GUI.color = borderColor;
