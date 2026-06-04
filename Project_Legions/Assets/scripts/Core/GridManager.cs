@@ -19,7 +19,7 @@ namespace PPCorps
 
         public float GridToWorldX(GridPosition pos)
         {
-            return _gridOrigin.x + pos.col * _cellSize + _cellSize / 2;
+            return _gridOrigin.x + pos.col * _cellSize;
         }
 
         public GridPosition WorldToGrid(Vector3 worldPos)

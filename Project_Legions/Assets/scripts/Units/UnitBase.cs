@@ -36,6 +36,7 @@ namespace PPCorps
             _gridPos = pos;
             for (int i = 0; i < OccupiedCols; i++)
                 GridManager.Instance.Occupy(_gridPos + i, this);
+            transform.position = new Vector3(GridManager.Instance.GridToWorldX(_gridPos), transform.position.y, 0);
         }
 
         public void SetAction(UnitAction action)
@@ -95,6 +96,7 @@ namespace PPCorps
                 _gridPos = GridManager.Instance.WorldToGrid(transform.position);
                 for (int i = 0; i < OccupiedCols; i++)
                     GridManager.Instance.Occupy(_gridPos + i, this);
+                transform.position = new Vector3(GridManager.Instance.GridToWorldX(_gridPos), transform.position.y, 0);
             }
             SyncAnimator();
         }

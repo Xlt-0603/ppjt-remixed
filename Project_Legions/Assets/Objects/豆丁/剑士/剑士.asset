@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: "\u5251\u58EB"
   m_EditorClassIdentifier: 
   unitName: 
-  prefab: {fileID: 7921402890884614123, guid: 10a9507c1f607854881ec5d5ef0a168b, type: 3}
-  icon: {fileID: 21300000, guid: f5f1ce55b0d151941a39fb77b9119efa, type: 3}
+  prefab: {fileID: 0}
+  icon: {fileID: 0}
   unitType: 0
   unitClass: 0
-  maxHP: 250
-  attackPower: 10
+  maxHP: 10
+  attackPower: 2
   attackRange: 1
   moveSpeed: 1
-  deployCost: 1
-  attackOnBeat1: 0
+  deployCost: 3
+  attackOnBeat1: 1
   attackOnBeat2: 0
   attackOnBeat3: 0
   attackOnBeat4: 0
@@ -38,8 +38,8 @@ MonoBehaviour:
   animEndBeat3: 0
   animStartBeat4: 0
   animEndBeat4: 0
-  animStartBeat5: 5
-  animEndBeat5: 5
+  animStartBeat5: 0
+  animEndBeat5: 0
   animStartBeat6: 0
   animEndBeat6: 0
   animStartBeat7: 0

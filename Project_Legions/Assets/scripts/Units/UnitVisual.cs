@@ -45,9 +45,15 @@ namespace PPCorps
                 t = Mathf.SmoothStep(0, 1, t);
                 transform.position = Vector3.Lerp(_unit.MoveFrom, _unit.MoveTo, t);
             }
-            else if (_wasMoving)
+            else
             {
-                transform.position = _unit.MoveTo;
+                if (_wasMoving)
+                    transform.position = _unit.MoveTo;
+
+                float centerX = GridManager.Instance.GridToWorldX(_unit.GridPos);
+                Vector3 pos = transform.position;
+                pos.x = centerX;
+                transform.position = pos;
             }
 
             _wasMoving = _unit.IsMoving;
