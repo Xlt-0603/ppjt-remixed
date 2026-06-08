@@ -4,6 +4,22 @@ using UnityEngine;
 
 namespace PPCorps
 {
+    [System.Serializable]
+    public class RarityCurrencyMapping
+    {
+        public Rarity rarity;
+        public string currencyName;
+        public Sprite currencyIcon;
+        public int currencyPerCopy;
+    }
+
+    public struct GachaPullItem
+    {
+        public GachaItemData item;
+        public CurrencyChangeInfo currencyChange;
+        public bool hasCurrencyChange;
+    }
+
     public class GachaSystem : MonoBehaviour
     {
         [Header("卡池")]
@@ -23,6 +39,9 @@ namespace PPCorps
 
         [Header("金保底")]
         public int 金保底计数 = 5;
+
+        [Header("满突转化（品级→货币，留空待填）")]
+        public RarityCurrencyMapping[] rarityCurrencyMappings;
 
         // ---- 运行时状态 ----
         private GachaSaveData _save;
@@ -48,18 +67,18 @@ namespace PPCorps
             PlayerPrefs.Save();
         }
 
-        public List<GachaItemData> Pull(int count)
+        public List<GachaPullItem> Pull(int count)
         {
             if (currentBanner == null)
             {
                 Debug.LogError("GachaSystem: currentBanner 未设置");
-                return new List<GachaItemData>();
+                return new List<GachaPullItem>();
             }
-            var results = new List<GachaItemData>();
+            var results = new List<GachaPullItem>();
             for (int i = 0; i < count; i++)
             {
                 var item = PullOnce();
-                if (item != null) results.Add(item);
+                if (item.item != null) results.Add(item);
             }
 
             Save();
@@ -77,7 +96,15 @@ namespace PPCorps
             return new List<GachaRecord>(_save.history);
         }
 
-        private GachaItemData PullOnce()
+        [ContextMenu("清除全部抽卡进度（重置保底、副本、记录）")]
+        private void ResetAllSave()
+        {
+            _save = new GachaSaveData();
+            Save();
+            Debug.Log("Gacha save data has been reset.");
+        }
+
+        private GachaPullItem PullOnce()
         {
             if (_save == null) LoadSave();
             _save.彩计数++;
@@ -86,7 +113,7 @@ namespace PPCorps
             // ---- 确定稀有度（含保底） ----
             Rarity rarity = ResolveRarity();
 
-            // ---- 取对应稀有度的物品 ----
+            // ---- 取对应稀有度的物品（不再过滤 maxCopies） ----
             GachaItemData item = PickItemFromRarity(rarity);
 
             // ---- 重试：该稀有度无可用物品时重新抽 ----
@@ -97,7 +124,7 @@ namespace PPCorps
                 item = PickItemFromRarity(rarity);
                 retries--;
             }
-            if (item == null) return null;
+            if (item == null) return new GachaPullItem { item = null };
 
             // ---- 彩稀有度：UP/大保底处理 ----
             if (rarity == Rarity.彩)
@@ -111,7 +138,7 @@ namespace PPCorps
                 if (wonUp)
                 {
                     var upPool = currentBanner.GetAllAvailable(Rarity.彩, true)
-                        .Where(i => i != null && GetCopyCount(i) < i.maxCopies)
+                        .Where(i => i != null)
                         .ToList();
                     if (upPool.Count > 0)
                         item = upPool[Random.Range(0, upPool.Count)];
@@ -122,15 +149,27 @@ namespace PPCorps
             if (rarity == Rarity.金)
                 _save.金计数 = 0;
 
-            // ---- 满突检查 ----
-            if (GetCopyCount(item) >= item.maxCopies)
+            TrackCopy(item);
+
+            // ---- 满突转化 ----
+            var result = new GachaPullItem { item = item };
+            bool overMax = GetCopyCount(item) > item.maxCopies;
+            if (overMax)
             {
-                item = PickItemFromRarity(rarity);
-                if (item == null) return null;
+                var mapping = GetCurrencyMapping(item.rarity);
+                if (mapping != null)
+                {
+                    result.hasCurrencyChange = true;
+                    result.currencyChange = new CurrencyChangeInfo
+                    {
+                        currencyName = mapping.currencyName,
+                        amount = mapping.currencyPerCopy,
+                        icon = mapping.currencyIcon
+                    };
+                }
             }
 
-            TrackCopy(item);
-            return item;
+            return result;
         }
 
         private Rarity ResolveRarity()
@@ -183,14 +222,22 @@ namespace PPCorps
             pool.AddRange(currentBanner.GetAllAvailable(rarity, false));
 
             var available = pool
-                .Where(i => i != null && GetCopyCount(i) < i.maxCopies)
+                .Where(i => i != null)
                 .ToList();
 
             if (available.Count == 0) return null;
             return available[Random.Range(0, available.Count)];
         }
 
-        private int GetCopyCount(GachaItemData item)
+        public RarityCurrencyMapping GetCurrencyMapping(Rarity rarity)
+        {
+            if (rarityCurrencyMappings == null) return null;
+            foreach (var m in rarityCurrencyMappings)
+                if (m.rarity == rarity) return m;
+            return null;
+        }
+
+        public int GetCopyCount(GachaItemData item)
         {
             return _save.GetCopyCount(item.name);
         }

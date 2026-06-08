@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial, sans-serif; }
+
+  .popup {
+    background: rgba(0,0,0,0.7);
+    padding: 50px 60px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .row {
+    display: flex;
+    gap: 60px;
+    justify-content: center;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .icon-wrapper {
+    position: relative;
+    width: 96px;
+    height: 96px;
+  }
+
+  .icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+    border: 3px solid #555;
+  }
+
+  .coin1 .icon { background: linear-gradient(135deg, #FFD700, #FFA500); border-color: #FFD700; }
+  .coin2 .icon { background: linear-gradient(135deg, #E040FB, #9C27B0); border-color: #E040FB; }
+
+  .badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1.5px solid #888;
+    line-height: 1.4;
+  }
+
+  .name {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .hint {
+    color: #888;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="popup">
+  <div class="row">
+    <div class="item coin1">
+      <div class="icon-wrapper">
+        <div class="icon"></div>
+        <div class="badge">+50</div>
+      </div>
+      <div class="name">金币</div>
+    </div>
+    <div class="item coin2">
+      <div class="icon-wrapper">
+        <div class="icon"></div>
+        <div class="badge">+10</div>
+      </div>
+      <div class="name">宝石</div>
+    </div>
+    <div class="item coin1">
+      <div class="icon-wrapper">
+        <div class="icon"></div>
+        <div class="badge">+100</div>
+      </div>
+      <div class="name">金币</div>
+    </div>
+  </div>
+  <div class="hint">点击任意处关闭</div>
+</div>
+</body>
+</html>

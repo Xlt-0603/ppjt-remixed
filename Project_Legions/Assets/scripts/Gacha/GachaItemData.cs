@@ -10,6 +10,11 @@ namespace PPCorps
         public Rarity rarity;
         public bool isUp;
         public int maxCopies = 12;
+
+        [Header("满突转化（待填）")]
+        public string currencyName;
+        public int currencyPerCopy;
+        public Sprite currencyIcon;
     }
 
     public enum Rarity

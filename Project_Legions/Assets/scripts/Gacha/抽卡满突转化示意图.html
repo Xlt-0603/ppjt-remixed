@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; display: flex; flex-direction: column; align-items: center; padding: 40px; font-family: Arial, sans-serif; gap: 50px; }
+
+  .phase-label { color: #888; font-size: 20px; margin-bottom: 10px; align-self: flex-start; }
+
+  /* --- 逐一展示阶段 --- */
+  .screen {
+    background: rgba(0,0,0,0.7);
+    padding: 50px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: 500px;
+  }
+
+  .step-row {
+    display: flex;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .arrow {
+    color: #666;
+    font-size: 36px;
+    font-weight: bold;
+  }
+
+  .icon-wrapper {
+    position: relative;
+    width: 96px;
+    height: 96px;
+  }
+
+  .icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+  }
+
+  .char-icon { background: linear-gradient(135deg, #FF6B6B, #C0392B); border: 3px solid #FF6B6B; }
+  .coin-icon { background: linear-gradient(135deg, #FFD700, #FFA500); border: 3px solid #FFD700; }
+
+  .badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1.5px solid #888;
+  }
+
+  .name {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .sub-label {
+    color: #aaa;
+    font-size: 13px;
+  }
+
+  .btn {
+    margin-top: 10px;
+    padding: 8px 30px;
+    background: #444;
+    color: white;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* --- 统一展示阶段 --- */
+  .all-row {
+    display: flex;
+    gap: 60px;
+    justify-content: center;
+  }
+
+  .all-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .all-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+  }
+
+  .char1 { background: linear-gradient(135deg, #5DADE2, #2E86C1); border: 2px solid #5DADE2; }
+  .char2 { background: linear-gradient(135deg, #FF6B6B, #C0392B); border: 2px solid #FF6B6B; }
+  .char3 { background: linear-gradient(135deg, #82E0AA, #27AE60); border: 2px solid #82E0AA; }
+
+  .all-name {
+    color: white;
+    font-size: 13px;
+  }
+
+  .convert-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .mini-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border: 1px solid #FFD700;
+    position: relative;
+  }
+
+  .mini-badge {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .convert-sep { color: #888; font-size: 22px; }
+</style>
+</head>
+<body>
+
+<!-- === 逐一展示阶段 === -->
+<div class="phase-label">▸ 逐一展示阶段（已满突卡牌 → 先角色 → 再货币）</div>
+<div class="screen">
+  <div class="step-row">
+    <div class="step">
+      <div class="icon-wrapper">
+        <div class="icon char-icon"></div>
+        <span class="badge" style="background:#e74c3c; border-color:#e74c3c;">满突</span>
+      </div>
+      <div class="name">击剑手</div>
+      <div class="sub-label">（已满突）</div>
+      <button class="btn">继续 →</button>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="step">
+      <div class="icon-wrapper">
+        <div class="icon coin-icon"></div>
+        <div class="badge">+30</div>
+      </div>
+      <div class="name">金币</div>
+      <div class="sub-label">满突转化获得</div>
+      <button class="btn">继续 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- === 统一展示阶段 === -->
+<div class="phase-label" style="margin-top:20px;">▸ 统一展示阶段（满突卡牌在角色下方显示转化货币）</div>
+<div class="screen">
+  <div class="all-row">
+    <div class="all-item">
+      <div class="all-icon char1"></div>
+      <div class="all-name">弓箭手</div>
+    </div>
+
+    <div class="all-item">
+      <div class="all-icon char2"></div>
+      <div class="all-name">击剑手</div>
+      <div class="convert-row">
+        <div class="mini-icon"><span class="mini-badge">×30</span></div>
+      </div>
+    </div>
+
+    <div class="all-item">
+      <div class="all-icon char3"></div>
+      <div class="all-name">剑士</div>
+    </div>
+  </div>
+  <button class="btn" style="margin-top:30px;">完成</button>
+</div>
+
+</body>
+</html>
