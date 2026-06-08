@@ -125,6 +125,7 @@ namespace PPCorps
                         GridManager.Instance.Occupy(pending.gridPos + i, unit);
 
                     GameManager.Instance.RegisterUnit(unit);
+                    unit.PlayDeployEffect();
                 }
 
                 if (pending.ghost != null)

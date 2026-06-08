@@ -9,6 +9,9 @@ namespace PPCorps
         [SerializeField] protected bool isEnemy;
         [SerializeField] protected Vector2 defaultMoveDirection = Vector2.zero;
         [SerializeField] protected Animator _animator;
+        [SerializeField] private GameObject _hitEffectPrefab;
+        [SerializeField] private GameObject _deathEffectPrefab;
+        [SerializeField] private GameObject _deployEffectPrefab;
 
         protected int _currentHP;
         protected bool _justArrived;
@@ -294,7 +297,78 @@ namespace PPCorps
         {
             if (_isDead) return;
             _currentHP -= damage;
+            SpawnHitEffect(damage);
             if (_currentHP <= 0) Die();
+        }
+
+        private void SpawnHitEffect(int damage)
+        {
+            if (_hitEffectPrefab == null) return;
+            GameObject fx = Instantiate(_hitEffectPrefab, transform.position, Quaternion.identity);
+            fx.transform.SetParent(null);
+
+            // face particle toward the attacker
+            // player unit (isEnemy=false): attacker from right → Y=0 (right)
+            // enemy unit (isEnemy=true): attacker from left → Y=180 (left)
+            float baseYRot = isEnemy ? 180f : 0f;
+            fx.transform.rotation = Quaternion.Euler(0, baseYRot, UnityEngine.Random.Range(-15f, 15f));
+
+            // more damage = bigger blood spray
+            float scaleMult = Mathf.Clamp(1f + (damage - 1) * 0.15f, 0.5f, 3f);
+            fx.transform.localScale = Vector3.one * scaleMult;
+
+            ParticleSystem ps = fx.GetComponentInChildren<ParticleSystem>();
+            if (ps != null)
+            {
+                ParticleSystem.MainModule main = ps.main;
+                main.loop = false;
+                float dur = ps.main.duration + ps.main.startLifetime.constantMax;
+                Destroy(fx, dur);
+            }
+            else
+            {
+                Destroy(fx, 1f);
+            }
+        }
+
+        private void SpawnDeathEffect()
+        {
+            if (_deathEffectPrefab == null) return;
+            GameObject fx = Instantiate(_deathEffectPrefab, transform.position, Quaternion.identity);
+            fx.transform.SetParent(null);
+            float baseYRot = isEnemy ? 180f : 0f;
+            fx.transform.rotation = Quaternion.Euler(0, baseYRot, 0);
+            ParticleSystem ps = fx.GetComponentInChildren<ParticleSystem>();
+            if (ps != null)
+            {
+                ParticleSystem.MainModule main = ps.main;
+                main.loop = false;
+                float dur = ps.main.duration + ps.main.startLifetime.constantMax;
+                Destroy(fx, dur);
+            }
+            else
+            {
+                Destroy(fx, 1f);
+            }
+        }
+
+        public void PlayDeployEffect()
+        {
+            if (_deployEffectPrefab == null) return;
+            GameObject fx = Instantiate(_deployEffectPrefab, transform.position, Quaternion.identity);
+            fx.transform.SetParent(null);
+            ParticleSystem ps = fx.GetComponentInChildren<ParticleSystem>();
+            if (ps != null)
+            {
+                ParticleSystem.MainModule main = ps.main;
+                main.loop = false;
+                float dur = ps.main.duration + ps.main.startLifetime.constantMax;
+                Destroy(fx, dur);
+            }
+            else
+            {
+                Destroy(fx, 1f);
+            }
         }
 
         protected virtual void Die()
@@ -307,6 +381,8 @@ namespace PPCorps
 
             if (GameManager.Instance != null)
                 GameManager.Instance.UnregisterUnit(this);
+
+            SpawnDeathEffect();
 
             OnUnitDeath?.Invoke(this);
 

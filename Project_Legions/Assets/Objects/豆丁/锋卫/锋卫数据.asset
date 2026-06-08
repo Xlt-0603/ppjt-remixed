@@ -48,7 +48,7 @@ MonoBehaviour:
   animEndBeat8: 0
   preferFarthestTarget: 0
   isVanguard: 1
-  vanguardScanMin: 2
-  vanguardScanMax: 5
-  vanguardDamage: 3
+  vanguardScanMin: 3
+  vanguardScanMax: 6
+  vanguardDamage: 150
   vanguardChargeBeats: 8

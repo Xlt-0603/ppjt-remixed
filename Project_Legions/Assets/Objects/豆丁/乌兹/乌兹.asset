@@ -16,7 +16,7 @@ MonoBehaviour:
   prefab: {fileID: 5968023733921410430, guid: 574a9ffc0f56c384aa9c2ec57e1003ea, type: 3}
   icon: {fileID: 21300000, guid: c69b2d3cd0c3099448727dc830cf8f49, type: 3}
   unitType: 0
-  unitClass: 0
+  unitClass: 1
   maxHP: 120
   attackPower: 8
   attackRange: 3
@@ -32,20 +32,20 @@ MonoBehaviour:
   attackOnBeat8: 1
   animStartBeat1: 0
   animEndBeat1: 0
-  animStartBeat2: 0
-  animEndBeat2: 0
-  animStartBeat3: 0
-  animEndBeat3: 0
-  animStartBeat4: 0
-  animEndBeat4: 0
+  animStartBeat2: 2
+  animEndBeat2: 2
+  animStartBeat3: 3
+  animEndBeat3: 3
+  animStartBeat4: 4
+  animEndBeat4: 4
   animStartBeat5: 0
   animEndBeat5: 0
-  animStartBeat6: 0
-  animEndBeat6: 0
-  animStartBeat7: 0
-  animEndBeat7: 0
-  animStartBeat8: 0
-  animEndBeat8: 0
+  animStartBeat6: 6
+  animEndBeat6: 6
+  animStartBeat7: 7
+  animEndBeat7: 7
+  animStartBeat8: 8
+  animEndBeat8: 8
   preferFarthestTarget: 0
   isVanguard: 0
   vanguardScanMin: 2
