@@ -34,6 +34,10 @@ namespace PPCorps
         [SerializeField] private float _fullLabelOffsetY = 50f;
         [SerializeField] private float _buttonOffsetY = 120f;
 
+        [Header("抽卡结果过渡页面（可拖入，空=跳过）")]
+        [SerializeField] private GachaResultPage _resultPage;
+
+        private bool _showingResultPage;
         private List<GachaPullItem> _currentPull;
         private int _displayIndex;
 
@@ -60,7 +64,7 @@ namespace PPCorps
                 return;
             }
 
-            if (_isLoading)
+            if (_isLoading || _showingResultPage)
             {
                 GUI.color = new Color(0, 0, 0, 0.6f);
                 GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
@@ -106,7 +110,28 @@ namespace PPCorps
             var result = _gachaSystem.Pull(count);
             _gachaSystem.SaveHistory(ExtractItems(result), isMulti);
             _isLoading = false;
-            ShowPull(result);
+
+            Rarity highest = GetHighestRarity(result);
+            if (_resultPage != null)
+            {
+                _showingResultPage = true;
+                _resultPage.Play(highest, () =>
+                {
+                    _showingResultPage = false;
+                    ShowPull(result);
+                });
+            }
+            else
+                ShowPull(result);
+        }
+
+        private Rarity GetHighestRarity(List<GachaPullItem> items)
+        {
+            Rarity h = Rarity.白;
+            foreach (var p in items)
+                if (p.item != null && (int)p.item.rarity > (int)h)
+                    h = p.item.rarity;
+            return h;
         }
 
         private List<GachaItemData> ExtractItems(List<GachaPullItem> pullItems)
