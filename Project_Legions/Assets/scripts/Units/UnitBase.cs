@@ -12,6 +12,8 @@ namespace PPCorps
         [SerializeField] private GameObject _hitEffectPrefab;
         [SerializeField] private GameObject _deathEffectPrefab;
         [SerializeField] private GameObject _deployEffectPrefab;
+        [SerializeField] private GameObject _bulletPrefab;
+        [SerializeField] private GameObject _hitSparkPrefab;
 
         protected int _currentHP;
         protected bool _justArrived;
@@ -155,6 +157,7 @@ namespace PPCorps
                         _currentAction = UnitAction.Attacking;
                         if (_animator != null)
                             _animator.Play("\u5251\u58EB\u6345", 0, 0f);
+                        SpawnBulletEffect(_currentTarget.transform.position);
                         _currentTarget.TakeDamage(data.attackPower);
                     }
                 }
@@ -368,6 +371,140 @@ namespace PPCorps
             else
             {
                 Destroy(fx, 1f);
+            }
+        }
+
+        private static Material _bulletMat;
+
+        private static Material GetOrCreateParticleMat()
+        {
+            Shader shader = Shader.Find("Particles/Alpha Blended");
+            if (shader == null) shader = Shader.Find("Particles/Additive");
+            if (shader == null) shader = Shader.Find("Sprites/Default");
+            return shader != null ? new Material(shader) : null;
+        }
+
+        public void SpawnBulletEffect(Vector3 targetPos)
+        {
+            Vector3 fromPos = transform.position + new Vector3(isEnemy ? -0.3f : 0.3f, 0f, 0f);
+            Vector3 dir = (targetPos - fromPos).normalized;
+            float dist = Vector3.Distance(fromPos, targetPos);
+            float speed = 25f;
+
+            ParticleSystem ps = null;
+            GameObject bulletGo = null;
+            float lifeTime = 0.3f;
+
+            if (_bulletPrefab != null)
+            {
+                bulletGo = Instantiate(_bulletPrefab, fromPos, Quaternion.identity);
+                bulletGo.transform.SetParent(null);
+                ps = bulletGo.GetComponent<ParticleSystem>();
+                if (ps != null)
+                {
+                    ParticleSystem.MainModule m = ps.main;
+                    lifeTime = Mathf.Max(dist / m.startSpeed.constant, 0.05f);
+                    m.startLifetime = lifeTime;
+                }
+            }
+            else
+            {
+                bulletGo = new GameObject("Bullet");
+                bulletGo.transform.position = fromPos;
+                bulletGo.transform.SetParent(null);
+                ps = bulletGo.AddComponent<ParticleSystem>();
+
+                ParticleSystem.MainModule m = ps.main;
+                m.startSpeed = 0f;
+                m.startLifetime = 0.3f;
+                m.startSize = 0.15f;
+                m.startColor = isEnemy ? new Color(1f, 0.3f, 0.2f) : new Color(0.3f, 0.6f, 1f);
+                m.maxParticles = 15;
+                m.loop = false;
+                m.playOnAwake = false;
+                m.simulationSpace = ParticleSystemSimulationSpace.World;
+                m.duration = 0.3f;
+
+                ParticleSystem.ShapeModule shape = ps.shape;
+                shape.shapeType = ParticleSystemShapeType.Box;
+                shape.scale = Vector3.one * 0.02f;
+
+                ParticleSystem.EmissionModule emit = ps.emission;
+                emit.rateOverTime = 0;
+
+                ParticleSystemRenderer r = ps.GetComponent<ParticleSystemRenderer>();
+                if (_bulletMat == null) _bulletMat = GetOrCreateParticleMat();
+                if (_bulletMat != null) r.sharedMaterial = _bulletMat;
+                r.sortingOrder = 32767;
+
+                lifeTime = dist / speed;
+                ps.Play();
+                ParticleSystem.EmitParams ep = new ParticleSystem.EmitParams();
+                ep.position = Vector3.zero;
+                ep.velocity = dir * speed;
+                ep.startSize = 0.15f;
+                ep.startLifetime = lifeTime;
+                ep.startColor = isEnemy ? new Color(1f, 0.3f, 0.2f) : new Color(0.3f, 0.6f, 1f);
+                for (int i = 0; i < 3; i++)
+                    ps.Emit(ep, 1);
+            }
+
+            if (ps != null)
+            {
+                if (_bulletPrefab != null) ps.Play();
+                Destroy(bulletGo, lifeTime + 0.5f);
+            }
+
+            // hit spark on target position
+            if (_hitSparkPrefab != null)
+            {
+                GameObject spark = Instantiate(_hitSparkPrefab, targetPos, Quaternion.identity);
+                spark.transform.SetParent(null);
+                ParticleSystem sp = spark.GetComponentInChildren<ParticleSystem>();
+                if (sp != null)
+                {
+                    ParticleSystem.MainModule sm = sp.main;
+                    sm.loop = false;
+                    Destroy(spark, sm.duration + sm.startLifetime.constantMax);
+                }
+                else
+                {
+                    Destroy(spark, 0.5f);
+                }
+            }
+            else
+            {
+                // auto spark
+                GameObject spark = new GameObject("HitSpark");
+                spark.transform.position = targetPos;
+                spark.transform.SetParent(null);
+                ParticleSystem sps = spark.AddComponent<ParticleSystem>();
+                ParticleSystem.MainModule sm = sps.main;
+                sm.startSpeed = 3f;
+                sm.startLifetime = 0.2f;
+                sm.startSize = 0.08f;
+                sm.startColor = new Color(1f, 0.8f, 0.2f, 1f);
+                sm.maxParticles = 10;
+                sm.loop = false;
+                sm.playOnAwake = true;
+                sm.simulationSpace = ParticleSystemSimulationSpace.World;
+
+                ParticleSystem.ShapeModule sshape = sps.shape;
+                sshape.shapeType = ParticleSystemShapeType.Circle;
+                sshape.radius = 0.05f;
+                sshape.arc = 360f;
+
+                ParticleSystem.EmissionModule semit = sps.emission;
+                semit.rateOverTime = 0;
+                semit.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0, (short)6) });
+
+                ParticleSystemRenderer sr = sps.GetComponent<ParticleSystemRenderer>();
+                if (_bulletMat == null) _bulletMat = GetOrCreateParticleMat();
+                if (_bulletMat != null) sr.sharedMaterial = _bulletMat;
+                sr.sortingOrder = 32767;
+
+                sps.Play();
+                Destroy(spark, 0.5f);
             }
         }
 

@@ -106,6 +106,8 @@ MonoBehaviour:
   _hitEffectPrefab: {fileID: 194062, guid: 8c27aeead6d968e4ba986702d6b84335, type: 3}
   _deathEffectPrefab: {fileID: 191186, guid: 079954accd64b32419ec069129c81273, type: 3}
   _deployEffectPrefab: {fileID: 100000, guid: ab1112643ee572748b01dede71158272, type: 3}
+  _bulletPrefab: {fileID: 7903720984859467429, guid: b9e74be9c7c31b544a90c12424c0e028, type: 3}
+  _hitSparkPrefab: {fileID: 3790256969507230857, guid: dc260d83dcb79344980e55b30f767979, type: 3}
 --- !u!114 &-2594831794458390665
 MonoBehaviour:
   m_ObjectHideFlags: 0

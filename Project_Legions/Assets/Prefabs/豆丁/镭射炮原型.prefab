@@ -147,3 +147,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fab00edf24b910d4da936a22340314eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _muzzleFlashPrefab: {fileID: 168542, guid: 5702e2a6fea804b45b49b70d8feaf7ae, type: 3}
+  _laserDuration: 0.15

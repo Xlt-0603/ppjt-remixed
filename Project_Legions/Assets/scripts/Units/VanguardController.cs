@@ -143,6 +143,7 @@ namespace PPCorps
                 _unit.ForceMove(frontPos);
             }
 
+            _unit.SpawnBulletEffect(_chargeTarget.transform.position);
             _chargeTarget.TakeDamage(_unit.Data.vanguardDamage);
 
             _isCharging = false;
