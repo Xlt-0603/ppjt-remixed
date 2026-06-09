@@ -16,6 +16,24 @@ namespace PPCorps
         [Header("满突角色自动跳转时间（秒）")]
         [SerializeField] private float _autoTransitionTime = 1f;
 
+        [Header("逐一展示 - 角色图标大小")]
+        [SerializeField] private float _charIconSize = 100f;
+        [Header("逐一展示 - 货币图标大小")]
+        [SerializeField] private float _currencyIconSize = 96f;
+        [SerializeField] private float _currencyBadgeSize = 28f;
+
+        [Header("统一展示 - 卡槽大小")]
+        [SerializeField] private float _slotWidth = 80f;
+        [SerializeField] private float _slotHeight = 140f;
+        [SerializeField] private float _slotIconSize = 60f;
+        [SerializeField] private float _currencyMiniIconSize = 24f;
+        [SerializeField] private float _currencyMiniBadgeSize = 16f;
+
+        [Header("布局偏移")]
+        [SerializeField] private float _nameOffsetY = 15f;
+        [SerializeField] private float _fullLabelOffsetY = 50f;
+        [SerializeField] private float _buttonOffsetY = 120f;
+
         private List<GachaPullItem> _currentPull;
         private int _displayIndex;
 
@@ -152,7 +170,7 @@ namespace PPCorps
                     DrawCharDisplay(item, cx, cy);
 
                     GUI.color = new Color(1, 0.8f, 0, 1);
-                    GUI.Label(new Rect(cx - 50, cy + 50, 100, 24), "已满突", GetSmallCenterStyle());
+                    GUI.Label(new Rect(cx - 50, cy + _fullLabelOffsetY, 100, 24), "已满突", GetSmallCenterStyle());
                     GUI.color = Color.white;
 
                     _autoTimer -= Time.unscaledDeltaTime;
@@ -170,45 +188,45 @@ namespace PPCorps
 
         private void DrawCharDisplay(GachaItemData item, float cx, float cy)
         {
+            float half = _charIconSize * 0.5f;
             if (item.icon != null)
-                GUI.DrawTexture(new Rect(cx - 50, cy - 100, 100, 100), item.icon.texture);
+                GUI.DrawTexture(new Rect(cx - half, cy - _charIconSize, _charIconSize, _charIconSize), item.icon.texture);
 
             Color c = GetRarityColor(item.rarity);
             GUI.color = c;
-            GUI.Label(new Rect(cx - 100, cy + 15, 200, 30), $"{item.itemName} ({item.rarity})", GetBigStyle());
+            GUI.Label(new Rect(cx - 100, cy + _nameOffsetY, 200, 30), $"{item.itemName} ({item.rarity})", GetBigStyle());
             GUI.color = Color.white;
         }
 
         private void DrawCurrencyDisplay(CurrencyChangeInfo change, float cx, float cy)
         {
-            float iconSize = 96f;
-            float iconX = cx - iconSize / 2f;
-            float iconY = cy - iconSize / 2f;
+            float half = _currencyIconSize * 0.5f;
+            float iconX = cx - half;
+            float iconY = cy - half;
 
             if (change.icon != null)
-                GUI.DrawTexture(new Rect(iconX, iconY, iconSize, iconSize), change.icon.texture);
+                GUI.DrawTexture(new Rect(iconX, iconY, _currencyIconSize, _currencyIconSize), change.icon.texture);
             else
             {
                 GUI.color = new Color(0.3f, 0.3f, 0.3f, 0.8f);
-                GUI.DrawTexture(new Rect(iconX, iconY, iconSize, iconSize), Texture2D.whiteTexture);
+                GUI.DrawTexture(new Rect(iconX, iconY, _currencyIconSize, _currencyIconSize), Texture2D.whiteTexture);
                 GUI.color = Color.white;
             }
 
-            float badgeSize = 28f;
-            float badgeX = iconX + iconSize - badgeSize;
-            float badgeY = iconY + iconSize - badgeSize;
+            float badgeX = iconX + _currencyIconSize - _currencyBadgeSize;
+            float badgeY = iconY + _currencyIconSize - _currencyBadgeSize;
             GUI.color = new Color(0, 0, 0, 0.8f);
-            GUI.DrawTexture(new Rect(badgeX, badgeY, badgeSize, badgeSize), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(badgeX, badgeY, _currencyBadgeSize, _currencyBadgeSize), Texture2D.whiteTexture);
             GUI.color = Color.white;
-            GUI.Label(new Rect(badgeX, badgeY, badgeSize, badgeSize), $"+{change.amount}", new GUIStyle
+            GUI.Label(new Rect(badgeX, badgeY, _currencyBadgeSize, _currencyBadgeSize), $"+{change.amount}", new GUIStyle
             {
-                fontSize = Mathf.RoundToInt(badgeSize * 0.45f),
+                fontSize = Mathf.RoundToInt(_currencyBadgeSize * 0.45f),
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.MiddleRight,
                 normal = new GUIStyleState { textColor = Color.white }
             });
 
-            GUI.Label(new Rect(cx - 60, iconY + iconSize + 10, 120, 24), change.currencyName, new GUIStyle
+            GUI.Label(new Rect(cx - 60, iconY + _currencyIconSize + 10, 120, 24), change.currencyName, new GUIStyle
             {
                 fontSize = 16,
                 alignment = TextAnchor.UpperCenter,
@@ -219,7 +237,7 @@ namespace PPCorps
         private void DrawOneByOneButtons()
         {
             float cx = Screen.width / 2f;
-            float btnY = Screen.height / 2f + 120;
+            float btnY = Screen.height / 2f + _buttonOffsetY;
 
             if (_displayIndex < _currentPull.Count - 1)
             {
@@ -239,48 +257,42 @@ namespace PPCorps
 
         private void DrawAllPhase()
         {
-            float slotW = 80f;
-            float slotH = 140f;
-            float startX = Screen.width / 2f - (_currentPull.Count * slotW) / 2f;
-            float y = Screen.height / 2f - slotH / 2f;
+            float startX = Screen.width / 2f - (_currentPull.Count * _slotWidth) / 2f;
+            float y = Screen.height / 2f - _slotHeight / 2f;
 
             for (int i = 0; i < _currentPull.Count; i++)
             {
                 var pullItem = _currentPull[i];
                 if (pullItem.item == null) continue;
                 var item = pullItem.item;
-                float x = startX + i * slotW;
+                float x = startX + i * _slotWidth;
 
-                // icon
+                float iconOffsetX = (_slotWidth - _slotIconSize) * 0.5f;
                 if (item.icon != null)
-                    GUI.DrawTexture(new Rect(x + 10, y, 60, 60), item.icon.texture);
+                    GUI.DrawTexture(new Rect(x + iconOffsetX, y, _slotIconSize, _slotIconSize), item.icon.texture);
 
-                // name
                 Color c = GetRarityColor(item.rarity);
                 GUI.color = c;
-                GUI.Label(new Rect(x, y + 65, slotW, 20), item.itemName, GetMiniStyle());
+                GUI.Label(new Rect(x, y + _slotIconSize + 5, _slotWidth, 20), item.itemName, GetMiniStyle());
                 GUI.color = Color.white;
 
-                // currency conversion row below name
                 if (pullItem.hasCurrencyChange)
                 {
-                    float currencyY = y + 90;
-                    float currencyIconSize = 24f;
-                    float ciX = x + (slotW - currencyIconSize) / 2f;
+                    float currencyY = y + _slotIconSize + 28;
+                    float ciX = x + (_slotWidth - _currencyMiniIconSize) * 0.5f;
 
                     if (pullItem.currencyChange.icon != null)
-                        GUI.DrawTexture(new Rect(ciX, currencyY, currencyIconSize, currencyIconSize), pullItem.currencyChange.icon.texture);
+                        GUI.DrawTexture(new Rect(ciX, currencyY, _currencyMiniIconSize, _currencyMiniIconSize), pullItem.currencyChange.icon.texture);
 
                     string badgeText = $"×{pullItem.currencyChange.amount}";
-                    float badgeSize = 16f;
-                    float badgeX = ciX + currencyIconSize - badgeSize;
-                    float badgeY2 = currencyY + currencyIconSize - badgeSize;
+                    float badgeX = ciX + _currencyMiniIconSize - _currencyMiniBadgeSize;
+                    float badgeY2 = currencyY + _currencyMiniIconSize - _currencyMiniBadgeSize;
                     GUI.color = new Color(0, 0, 0, 0.8f);
-                    GUI.DrawTexture(new Rect(badgeX, badgeY2, badgeSize, badgeSize), Texture2D.whiteTexture);
+                    GUI.DrawTexture(new Rect(badgeX, badgeY2, _currencyMiniBadgeSize, _currencyMiniBadgeSize), Texture2D.whiteTexture);
                     GUI.color = Color.white;
-                    GUI.Label(new Rect(badgeX, badgeY2, badgeSize, badgeSize), badgeText, new GUIStyle
+                    GUI.Label(new Rect(badgeX, badgeY2, _currencyMiniBadgeSize, _currencyMiniBadgeSize), badgeText, new GUIStyle
                     {
-                        fontSize = 7,
+                        fontSize = Mathf.RoundToInt(_currencyMiniBadgeSize * 0.45f),
                         fontStyle = FontStyle.Bold,
                         alignment = TextAnchor.MiddleRight,
                         normal = new GUIStyleState { textColor = Color.white }
@@ -288,7 +300,7 @@ namespace PPCorps
                 }
             }
 
-            if (GUI.Button(new Rect(Screen.width / 2f - 50, Screen.height / 2f + slotH / 2f + 20, 100, 30), "完成"))
+            if (GUI.Button(new Rect(Screen.width / 2f - 50, Screen.height / 2f + _slotHeight / 2f + 20, 100, 30), "完成"))
             {
                 FlushCurrencyChanges();
                 _phase = Phase.Idle;
