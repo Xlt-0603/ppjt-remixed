@@ -22,7 +22,7 @@ MonoBehaviour:
   attackRange: 4
   moveSpeed: 1
   deployCost: 2
-  attackOnBeat1: 1
+  attackOnBeat1: 0
   attackOnBeat2: 0
   attackOnBeat3: 0
   attackOnBeat4: 0

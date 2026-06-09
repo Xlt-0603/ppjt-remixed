@@ -120,6 +120,7 @@ namespace PPCorps
                 int damage = _unit.Data.attackPower;
                 if (target is Tower)
                     damage = damage / 2;
+                _unit.SpawnBulletEffect(target.transform.position);
                 target.TakeDamage(damage);
             }
 
