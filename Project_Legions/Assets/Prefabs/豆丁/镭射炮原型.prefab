@@ -107,6 +107,10 @@ MonoBehaviour:
   _hitEffectPrefab: {fileID: 194062, guid: 8c27aeead6d968e4ba986702d6b84335, type: 3}
   _deathEffectPrefab: {fileID: 191186, guid: 079954accd64b32419ec069129c81273, type: 3}
   _deployEffectPrefab: {fileID: 100000, guid: ab1112643ee572748b01dede71158272, type: 3}
+  _bulletPrefab: {fileID: 0}
+  _hitSparkPrefab: {fileID: 0}
+  _arrowPrefab: {fileID: 0}
+  _arcHeight: 1.5
 --- !u!114 &5154549018313074880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,5 +151,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fab00edf24b910d4da936a22340314eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _muzzleFlashPrefab: {fileID: 168542, guid: 5702e2a6fea804b45b49b70d8feaf7ae, type: 3}
-  _laserDuration: 0.15
+  _laserBeamPrefab: {fileID: 4650699752843925900, guid: 27aa371e7620b73458a16ea135bc8622, type: 3}
+  _helixLinePrefab: {fileID: 7057606597425919970, guid: 64835c84811e90e43902efe3fff863e2, type: 3}
+  _laserDuration: 0.3
+  _helixRadius: 0.5
+  _helixTurns: 5

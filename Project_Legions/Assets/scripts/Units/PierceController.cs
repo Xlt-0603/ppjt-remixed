@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PPCorps
@@ -6,6 +8,15 @@ namespace PPCorps
     {
         private UnitBase _unit;
         private int _moveCooldown;
+        private int _attackCooldown;
+
+        [SerializeField] private GameObject _laserBeamPrefab;
+        [SerializeField] private GameObject _helixLinePrefab;
+        [SerializeField] private float _laserDuration = 0.8f;
+        [SerializeField] private float _helixRadius = 0.25f;
+        [SerializeField] private float _helixTurns = 3f;
+
+        private static Material _sharedMat;
 
         private void Awake()
         {
@@ -33,13 +44,14 @@ namespace PPCorps
             if (_unit == null || _unit.IsDead) return;
 
             if (_moveCooldown > 0) _moveCooldown--;
+            if (_attackCooldown > 0) _attackCooldown--;
 
             // handle movement
             if (beat == 1 && _moveCooldown == 0 && !HasEnemyInRange())
                 TryMoveForward();
 
             // handle attack
-            if (ShouldAttackOnBeat(beat) && HasEnemyInRange())
+            if (_attackCooldown == 0 && ShouldAttackOnBeat(beat) && HasEnemyInRange())
                 DoPierceAttack();
 
             _unit.SuppressNormalBehavior = true;
@@ -98,6 +110,7 @@ namespace PPCorps
 
         private void DoPierceAttack()
         {
+            _attackCooldown = 8;
             int dir = _unit.IsEnemy ? -1 : 1;
             int myCol = _unit.GridPos.col;
 
@@ -120,11 +133,96 @@ namespace PPCorps
                 int damage = _unit.Data.attackPower;
                 if (target is Tower)
                     damage = damage / 2;
-                _unit.SpawnBulletEffect(target.transform.position);
                 target.TakeDamage(damage);
             }
 
+            SpawnLaserEffect();
+
             _unit.SetAction(UnitAction.Attacking);
+        }
+
+        private static Material GetSharedMat()
+        {
+            if (_sharedMat != null) return _sharedMat;
+            Shader s = Shader.Find("Particles/Alpha Blended");
+            if (s == null) s = Shader.Find("Particles/Additive");
+            if (s == null) s = Shader.Find("Sprites/Default");
+            if (s != null) _sharedMat = new Material(s);
+            return _sharedMat;
+        }
+
+        private void SpawnLaserEffect()
+        {
+            if (_laserBeamPrefab == null && _helixLinePrefab == null) return;
+
+            int dir = _unit.IsEnemy ? -1 : 1;
+            Vector3 fromPos = _unit.transform.position + new Vector3(dir * 0.3f, 0f, -1f);
+            float endX = _unit.IsEnemy
+                ? GridManager.Instance.GridToWorldX(new GridPosition(0)) - 2f
+                : GridManager.Instance.GridToWorldX(new GridPosition(GridManager.Instance.Cols - 1)) + 2f;
+            Vector3 endPos = new Vector3(endX, fromPos.y, -1f);
+
+            // main beam — prefab at cannon, local positions
+            if (_laserBeamPrefab != null)
+            {
+                GameObject beam = Instantiate(_laserBeamPrefab, fromPos, Quaternion.identity);
+                beam.transform.SetParent(null);
+                LineRenderer lr = beam.GetComponentInChildren<LineRenderer>();
+                if (lr != null)
+                {
+                    lr.positionCount = 2;
+                    lr.SetPosition(0, Vector3.zero);
+                    lr.SetPosition(1, endPos - fromPos);
+                }
+                Destroy(beam, _laserDuration + 0.5f);
+            }
+
+            // helix line — prefab at cannon, local positions
+            if (_helixLinePrefab != null)
+                StartCoroutine(AnimateHelixLine(fromPos, endPos));
+        }
+
+        private IEnumerator AnimateHelixLine(Vector3 start, Vector3 end)
+        {
+            float dist = Vector3.Distance(start, end);
+            if (dist < 0.1f) yield break;
+
+            GameObject go = Instantiate(_helixLinePrefab, start, Quaternion.identity);
+            go.transform.SetParent(null);
+            LineRenderer lr = go.GetComponentInChildren<LineRenderer>();
+            if (lr == null) { Destroy(go); yield break; }
+
+            int segments = Mathf.Max(lr.positionCount, 60);
+
+            int helixDir = _unit.IsEnemy ? -1 : 1;
+            float elapsed = 0f;
+
+            while (elapsed < _laserDuration)
+            {
+                float scroll = elapsed / _laserDuration * 2f;
+
+                lr.positionCount = segments;
+                for (int i = 0; i < segments; i++)
+                {
+                    float t = (float)i / (segments - 1);
+                    Vector3 worldPos = Vector3.Lerp(start, end, t);
+                    float angle = t * Mathf.PI * 2 * _helixTurns + scroll * Mathf.PI * 2 * helixDir;
+                    worldPos.y += Mathf.Sin(angle) * _helixRadius;
+                    lr.SetPosition(i, go.transform.InverseTransformPoint(worldPos));
+                }
+
+                lr.widthCurve = new AnimationCurve(
+                    new Keyframe(0f, 0f),
+                    new Keyframe(0.1f, 1f),
+                    new Keyframe(0.9f, 1f),
+                    new Keyframe(1f, 0f)
+                );
+
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            Destroy(go, 0.1f);
         }
     }
 }
