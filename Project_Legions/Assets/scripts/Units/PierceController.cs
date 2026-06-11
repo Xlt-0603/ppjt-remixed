@@ -45,16 +45,16 @@ namespace PPCorps
 
             if (_moveCooldown > 0) _moveCooldown--;
 
-            // rest bar: no attacks, no movement
+            // handle movement — can move on any bar
+            if (beat == 1 && _moveCooldown == 0 && !HasEnemyInRange())
+                TryMoveForward();
+
+            // rest bar: no attacks
             if (bar == _lastAttackBar + 1)
             {
                 _unit.SuppressNormalBehavior = true;
                 return;
             }
-
-            // handle movement
-            if (beat == 1 && _moveCooldown == 0 && !HasEnemyInRange())
-                TryMoveForward();
 
             // handle attack — fire on every configured beat in the attack bar
             if (ShouldAttackOnBeat(beat) && HasEnemyInRange())
