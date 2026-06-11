@@ -8,7 +8,7 @@ namespace PPCorps
     {
         private UnitBase _unit;
         private int _moveCooldown;
-        private int _attackCooldown;
+        private int _lastAttackBar = -10;
 
         [SerializeField] private GameObject _laserBeamPrefab;
         [SerializeField] private GameObject _helixLinePrefab;
@@ -44,15 +44,25 @@ namespace PPCorps
             if (_unit == null || _unit.IsDead) return;
 
             if (_moveCooldown > 0) _moveCooldown--;
-            if (_attackCooldown > 0) _attackCooldown--;
+
+            // rest bar: no attacks, no movement
+            if (bar == _lastAttackBar + 1)
+            {
+                _unit.SuppressNormalBehavior = true;
+                return;
+            }
 
             // handle movement
             if (beat == 1 && _moveCooldown == 0 && !HasEnemyInRange())
                 TryMoveForward();
 
-            // handle attack
-            if (_attackCooldown == 0 && ShouldAttackOnBeat(beat) && HasEnemyInRange())
+            // handle attack — fire on every configured beat in the attack bar
+            if (ShouldAttackOnBeat(beat) && HasEnemyInRange())
+            {
                 DoPierceAttack();
+                if (bar != _lastAttackBar)
+                    _lastAttackBar = bar;
+            }
 
             _unit.SuppressNormalBehavior = true;
         }
@@ -110,7 +120,6 @@ namespace PPCorps
 
         private void DoPierceAttack()
         {
-            _attackCooldown = 8;
             int dir = _unit.IsEnemy ? -1 : 1;
             int myCol = _unit.GridPos.col;
 
