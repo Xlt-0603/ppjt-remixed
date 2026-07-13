@@ -14,6 +14,8 @@ namespace PPCorps
         [SerializeField] private GameObject _deployEffectPrefab;
         [SerializeField] private GameObject _bulletPrefab;
         [SerializeField] private GameObject _hitSparkPrefab;
+        [SerializeField] private GameObject _arrowPrefab;
+        [SerializeField] private float _arcHeight = 1.5f;
 
         protected int _currentHP;
         protected bool _justArrived;
@@ -376,6 +378,11 @@ namespace PPCorps
 
         public void SpawnBulletEffect(Vector3 targetPos)
         {
+            if (_arrowPrefab != null)
+            {
+                SpawnArrow(targetPos);
+                return;
+            }
             if (_bulletPrefab == null) return;
 
             Vector3 fromPos = transform.position + new Vector3(isEnemy ? -0.3f : 0.3f, 0f, 0f);
@@ -397,16 +404,55 @@ namespace PPCorps
             ps.Clear();
             m.simulationSpace = ParticleSystemSimulationSpace.World;
             m.playOnAwake = false;
+
+            // disable prefab's built-in emission, we emit manually
+            ParticleSystem.EmissionModule emit = ps.emission;
+            emit.rateOverTime = 0;
+            emit.SetBursts(new ParticleSystem.Burst[0]);
+
             ps.Play();
 
             ParticleSystem.EmitParams ep = new ParticleSystem.EmitParams();
             ep.velocity = dir * speed;
             ep.startLifetime = lifeTime;
-            ps.Emit(ep, 3);
+            ps.Emit(ep, 1);
 
             Destroy(bulletGo, lifeTime + 0.5f);
 
             SpawnHitSpark(targetPos);
+        }
+
+        private void SpawnArrow(Vector3 targetPos)
+        {
+            Vector3 fromPos = transform.position + new Vector3(isEnemy ? -0.1f : 0.1f, 0.5f, 0f);
+            GameObject arrow = Instantiate(_arrowPrefab, fromPos, Quaternion.identity);
+            arrow.transform.SetParent(null);
+            StartCoroutine(AnimateArrow(arrow, fromPos, targetPos, 0.4f));
+        }
+
+        private System.Collections.IEnumerator AnimateArrow(GameObject arrow, Vector3 from, Vector3 to, float duration)
+        {
+            float elapsed = 0f;
+            Vector3 prevPos = from;
+            while (elapsed < duration)
+            {
+                float t = elapsed / duration;
+                Vector3 pos = Vector3.Lerp(from, to, t);
+                pos.y += Mathf.Sin(t * Mathf.PI) * _arcHeight;
+                arrow.transform.position = pos;
+
+                // rotate arrow to face movement direction
+                Vector3 delta = pos - prevPos;
+                if (delta.sqrMagnitude > 0.001f)
+                    arrow.transform.rotation = Quaternion.LookRotation(Vector3.forward, delta) * Quaternion.Euler(0, 0, 90);
+                prevPos = pos;
+
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            arrow.transform.position = to;
+            Destroy(arrow, 0.1f);
+            SpawnHitSpark(to);
         }
 
         private void SpawnHitSpark(Vector3 pos)

@@ -106,6 +106,10 @@ MonoBehaviour:
   _hitEffectPrefab: {fileID: 194062, guid: 8c27aeead6d968e4ba986702d6b84335, type: 3}
   _deathEffectPrefab: {fileID: 191186, guid: 079954accd64b32419ec069129c81273, type: 3}
   _deployEffectPrefab: {fileID: 100000, guid: ab1112643ee572748b01dede71158272, type: 3}
+  _bulletPrefab: {fileID: 0}
+  _hitSparkPrefab: {fileID: 0}
+  _arrowPrefab: {fileID: 4889921506832351387, guid: bb5cc5287729d2948b2bf78ca8666189, type: 3}
+  _arcHeight: 2
 --- !u!114 &8195833686295463844
 MonoBehaviour:
   m_ObjectHideFlags: 0
